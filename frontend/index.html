@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrueForge Agent Harness - AI Spatial Layout & Procurement</title>
+  <meta name="description" content="Production-grade AI agent harness with Model Context Protocol (MCP) catalog server, isolated Python spatial layout sandbox, and Human-in-the-Loop approval gate.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation -->
+    <header class="top-nav">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div>
+          <h1 class="brand-title">TrueForge Office Architect</h1>
+        </div>
+        <span class="brand-tag">Agent Harness</span>
+      </div>
+
+      <div class="status-badges">
+        <div class="badge" id="badgeMcp"><span class="dot"></span> MCP Catalog Server</div>
+        <div class="badge" id="badgeSandbox"><span class="dot purple"></span> Python Sandbox Runner</div>
+        <div class="badge" id="badgeGate"><span class="dot amber"></span> HITL Security Gate</div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="main-grid">
+      <!-- Left Column: Controls & Terminal Stream -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Session Configuration
+          </h2>
+          <span id="sessionStatusBadge" class="badge">READY</span>
+        </div>
+
+        <div class="panel-body">
+          <div class="form-group">
+            <label for="promptGoal">User Objective & Goal</label>
+            <textarea id="promptGoal" rows="2" placeholder="e.g. Set up an ergonomic workstation with motorized desk, mesh chair, curved ultrawide monitor under $1600"></textarea>
+          </div>
+
+          <div class="presets-container">
+            <span class="preset-chip" onclick="applyPreset('ergonomic')">⚡ Ergonomic Power Setup ($1,600)</span>
+            <span class="preset-chip" onclick="applyPreset('minimalist')">🌿 Nordic Minimalist ($950)</span>
+            <span class="preset-chip" onclick="applyPreset('executive')">💼 Executive Suite ($2,200)</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="roomWidth">Room Width (ft)</label>
+              <input type="number" id="roomWidth" value="12" min="6" max="30" step="0.5">
+            </div>
+            <div class="form-group">
+              <label for="roomLength">Room Length (ft)</label>
+              <input type="number" id="roomLength" value="10" min="6" max="30" step="0.5">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="budgetLimit">Budget Limit ($)</label>
+              <input type="number" id="budgetLimit" value="1600" step="50">
+            </div>
+            <div class="form-group">
+              <label for="doorWall">Door Wall Location</label>
+              <select id="doorWall">
+                <option value="south" selected>South Wall (Bottom)</option>
+                <option value="north">North Wall (Top)</option>
+                <option value="east">East Wall (Right)</option>
+                <option value="west">West Wall (Left)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; margin-top: 0.25rem;">
+            <button id="btnStartSession" class="btn btn-primary" style="flex: 2;" onclick="startNewSession()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Start Agent Run
+            </button>
+            <button id="btnSimulateReconnect" class="btn btn-secondary" style="flex: 1;" title="Simulate page reload or mid-session network reconnection" onclick="simulateReconnect()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Reconnect
+            </button>
+          </div>
+
+          <!-- Live Event Terminal -->
+          <div class="terminal-container">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="t-dot red"></span>
+                <span class="t-dot yellow"></span>
+                <span class="t-dot green"></span>
+              </div>
+              <span id="terminalSessionId" style="font-family: var(--font-mono);">session: none</span>
+              <button onclick="clearLogs()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.7rem;">Clear</button>
+            </div>
+            <div id="terminalLogs" class="terminal-logs">
+              <div class="log-entry">
+                <div class="log-header">
+                  <span class="log-tag">SYSTEM</span>
+                  <span class="log-time">Ready</span>
+                </div>
+                <div class="log-content">TrueForge harness ready. Click "Start Agent Run" to begin streaming live MCP tool-calls and sandbox execution.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Canvas Visualizer & Approval Banner -->
+      <section class="visualizer-column">
+        <!-- Layout Metrics Bar -->
+        <div class="metrics-bar">
+          <div class="metric-card">
+            <span class="metric-title">Ergonomic Score</span>
+            <span id="metricErgo" class="metric-value">--/100</span>
+            <span class="metric-sub" id="metricErgoSub">Circulation & clearances</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Space Utilization</span>
+            <span id="metricUtil" class="metric-value">--%</span>
+            <span class="metric-sub">Footprint ratio</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Floor Collisions</span>
+            <span id="metricCollisions" class="metric-value" style="color: var(--accent-emerald);">0</span>
+            <span class="metric-sub">Geometric overlap checks</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Procurement Total</span>
+            <span id="metricCost" class="metric-value">$0.00</span>
+            <span class="metric-sub" id="metricBudgetSub">Budget cap: $1,600</span>
+          </div>
+        </div>
+
+        <!-- Approval Gate Banner (Visible when WAITING_FOR_APPROVAL) -->
+        <div id="approvalBanner" class="approval-banner" style="display: none;">
+          <div class="approval-header">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 700; color: #fbbf24;">🛡️ Human Approval Gate Blocked Sensitive Action</h3>
+              <p style="font-size: 0.8rem; color: #fde68a;">The agent attempted to invoke <code>place_order</code>. Execution is provably halted until you authorize.</p>
+            </div>
+            <span class="approval-badge">APPROVAL REQUIRED</span>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.35); border-radius: var(--radius-sm); padding: 0.75rem;">
+            <table class="order-items-table" id="orderItemsTable">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th style="text-align: right;">Price</th>
+                </tr>
+              </thead>
+              <tbody id="orderItemsBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+            <div style="display: flex; justify-content: flex-end; padding-top: 0.5rem; font-size: 0.9rem; font-weight: 700;">
+              <span>Total Order Cost: <span id="approvalTotalCost" style="color: #fbbf24;">$0.00</span></span>
+            </div>
+          </div>
+
+          <div class="approval-actions">
+            <button class="btn btn-secondary" onclick="rejectCurrentOrder()">
+              Reject Order
+            </button>
+            <button class="btn btn-success" onclick="approveCurrentOrder()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Authorize & Place Order
+            </button>
+          </div>
+        </div>
+
+        <!-- 2D Spatial Layout Canvas -->
+        <div class="glass-panel canvas-card">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              Sandbox 2D Spatial Floorplan Visualizer
+            </h2>
+            <span id="canvasDimLabel" class="badge">12.0 ft × 10.0 ft Room</span>
+          </div>
+
+          <div class="canvas-wrapper">
+            <canvas id="roomCanvas" width="800" height="500"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
