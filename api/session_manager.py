@@ -2,12 +2,11 @@
 Session Manager and Event Bus for TrueForge Agent.
 Maintains state persistence, event history, and multi-subscriber broadcast for live streaming and seamless reconnection.
 """
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Any
 import asyncio
 import uuid
 import logging
 from agent.engine import TrueForgeAgentSession, AgentEvent, agent_runner_instance
-from sandbox.layout_algorithm import RoomConfig
 from agent.approval_gate import approval_gate_instance
 
 logger = logging.getLogger("session_manager")
@@ -24,19 +23,24 @@ class SessionManager:
 
     def create_session(
         self,
-        goal: str,
-        room_data: Optional[Dict] = None,
+        prompt: str,
+        room_data: Optional[Dict[str, Any]] = None,
         budget: float = 2000.0,
-        preferred_style: str = "Ergonomic & Modern"
+        preferred_style: str = "Modern & Ergonomic"
     ) -> TrueForgeAgentSession:
         session_id = f"sess-{uuid.uuid4().hex[:8]}"
-        room_dict = room_data or {"width": 12.0, "length": 10.0, "door_wall": "south", "door_position": 3.0, "door_width": 3.0}
-        room = RoomConfig(**room_dict)
+        room_dict = room_data or {"width_ft": 12.0, "length_ft": 10.0, "door_wall": "south", "door_position": 3.0, "door_width": 3.0}
+        
+        # Ensure width_ft and length_ft are present
+        if "width" in room_dict and "width_ft" not in room_dict:
+            room_dict["width_ft"] = room_dict["width"]
+        if "length" in room_dict and "length_ft" not in room_dict:
+            room_dict["length_ft"] = room_dict["length"]
 
         session = TrueForgeAgentSession(
             session_id=session_id,
-            goal=goal,
-            room=room,
+            prompt=prompt,
+            room=room_dict,
             budget=budget,
             preferred_style=preferred_style
         )
@@ -47,11 +51,11 @@ class SessionManager:
     def get_session(self, session_id: str) -> Optional[TrueForgeAgentSession]:
         return self._sessions.get(session_id)
 
-    def list_sessions(self) -> List[Dict]:
+    def list_sessions(self) -> List[Dict[str, Any]]:
         return [
             {
                 "session_id": s.session_id,
-                "goal": s.goal,
+                "prompt": s.prompt,
                 "status": s.status,
                 "created_at": s.created_at,
                 "event_count": len(s.events)
@@ -88,7 +92,6 @@ class SessionManager:
             raise ValueError(f"Session {session_id} not found")
 
         if session_id in self._running_tasks and not self._running_tasks[session_id].done():
-            # Already running
             return
 
         async def _run():
@@ -97,13 +100,17 @@ class SessionManager:
                     await self.broadcast_event(session_id, event)
             except Exception as e:
                 logger.error(f"Error in session run: {e}", exc_info=True)
-                err_evt = session.add_event("session_error", {"error": str(e)})
+                err_evt = session.add_event("done", {
+                    "session_id": session_id,
+                    "status": "FAILED",
+                    "error": str(e)
+                })
                 await self.broadcast_event(session_id, err_evt)
 
         task = asyncio.create_task(_run())
         self._running_tasks[session_id] = task
 
-    async def approve_and_resume(self, session_id: str) -> Dict:
+    async def approve_and_resume(self, session_id: str) -> Dict[str, Any]:
         """Approve pending gate and resume agent execution."""
         session = self.get_session(session_id)
         if not session:
@@ -121,7 +128,11 @@ class SessionManager:
                     await self.broadcast_event(session_id, event)
             except Exception as e:
                 logger.error(f"Error in session resume: {e}", exc_info=True)
-                err_evt = session.add_event("session_error", {"error": str(e)})
+                err_evt = session.add_event("done", {
+                    "session_id": session_id,
+                    "status": "FAILED",
+                    "error": str(e)
+                })
                 await self.broadcast_event(session_id, err_evt)
 
         task = asyncio.create_task(_resume())
@@ -134,7 +145,7 @@ class SessionManager:
             "session_id": session_id
         }
 
-    async def reject_session(self, session_id: str, reason: str = "User declined order") -> Dict:
+    async def reject_session(self, session_id: str, reason: str = "User declined order") -> Dict[str, Any]:
         session = self.get_session(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")

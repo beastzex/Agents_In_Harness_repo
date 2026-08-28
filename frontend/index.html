@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TrueForge Agent Harness - AI Spatial Layout & Procurement</title>
-  <meta name="description" content="Production-grade AI agent harness with Model Context Protocol (MCP) catalog server, isolated Python spatial layout sandbox, and Human-in-the-Loop approval gate.">
+  <title>The Renovation Architect - TrueForge Spatial AI & Procurement</title>
+  <meta name="description" content="Production-grade AI agent harness on TrueForge: MCP catalog server, isolated Python spatial layout sandbox, and Human-in-the-Loop approval gate.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,14 +19,14 @@
           <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
         <div>
-          <h1 class="brand-title">TrueForge Office Architect</h1>
+          <h1 class="brand-title">The Renovation Architect</h1>
         </div>
-        <span class="brand-tag">Agent Harness</span>
+        <span class="brand-tag">TrueForge Harness</span>
       </div>
 
       <div class="status-badges">
-        <div class="badge" id="badgeMcp"><span class="dot"></span> MCP Catalog Server</div>
-        <div class="badge" id="badgeSandbox"><span class="dot purple"></span> Python Sandbox Runner</div>
+        <div class="badge" id="badgeMcp"><span class="dot"></span> MCP Furniture Server</div>
+        <div class="badge" id="badgeSandbox"><span class="dot purple"></span> Python Sandbox Engine</div>
         <div class="badge" id="badgeGate"><span class="dot amber"></span> HITL Security Gate</div>
       </div>
     </header>
@@ -38,20 +38,20 @@
         <div class="panel-header">
           <h2 class="panel-title">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            Session Configuration
+            Space & Budget Configuration
           </h2>
           <span id="sessionStatusBadge" class="badge">READY</span>
         </div>
 
         <div class="panel-body">
           <div class="form-group">
-            <label for="promptGoal">User Objective & Goal</label>
-            <textarea id="promptGoal" rows="2" placeholder="e.g. Set up an ergonomic workstation with motorized desk, mesh chair, curved ultrawide monitor under $1600"></textarea>
+            <label for="promptGoal">Renovation Prompt & Style</label>
+            <textarea id="promptGoal" rows="2" placeholder="e.g. Design modern ergonomic workstation with motorized standing desk, mesh chair, and lighting under $1600"></textarea>
           </div>
 
           <div class="presets-container">
-            <span class="preset-chip" onclick="applyPreset('ergonomic')">⚡ Ergonomic Power Setup ($1,600)</span>
-            <span class="preset-chip" onclick="applyPreset('minimalist')">🌿 Nordic Minimalist ($950)</span>
+            <span class="preset-chip" onclick="applyPreset('ergonomic')">⚡ Ergonomic Setup ($1,600)</span>
+            <span class="preset-chip" onclick="applyPreset('minimalist')">🌿 Nordic Minimalist ($1,100)</span>
             <span class="preset-chip" onclick="applyPreset('executive')">💼 Executive Suite ($2,200)</span>
           </div>
 
@@ -87,7 +87,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Start Agent Run
             </button>
-            <button id="btnSimulateReconnect" class="btn btn-secondary" style="flex: 1;" title="Simulate page reload or mid-session network reconnection" onclick="simulateReconnect()">
+            <button id="btnSimulateReconnect" class="btn btn-secondary" style="flex: 1;" title="Simulate mid-session page reload or network reconnect" onclick="simulateReconnect()">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
               Reconnect
             </button>
@@ -110,7 +110,7 @@
                   <span class="log-tag">SYSTEM</span>
                   <span class="log-time">Ready</span>
                 </div>
-                <div class="log-content">TrueForge harness ready. Click "Start Agent Run" to begin streaming live MCP tool-calls and sandbox execution.</div>
+                <div class="log-content">TrueForge harness ready. Click "Start Agent Run" to begin streaming live MCP tool-calls, sandbox execution, and HITL gate demo.</div>
               </div>
             </div>
           </div>
@@ -132,9 +132,9 @@
             <span class="metric-sub">Footprint ratio</span>
           </div>
           <div class="metric-card">
-            <span class="metric-title">Floor Collisions</span>
+            <span class="metric-title">Unplaced Items</span>
             <span id="metricCollisions" class="metric-value" style="color: var(--accent-emerald);">0</span>
-            <span class="metric-sub">Geometric overlap checks</span>
+            <span class="metric-sub">Collision rejects</span>
           </div>
           <div class="metric-card">
             <span class="metric-title">Procurement Total</span>
@@ -147,8 +147,8 @@
         <div id="approvalBanner" class="approval-banner" style="display: none;">
           <div class="approval-header">
             <div>
-              <h3 style="font-size: 1.05rem; font-weight: 700; color: #fbbf24;">🛡️ Human Approval Gate Blocked Sensitive Action</h3>
-              <p style="font-size: 0.8rem; color: #fde68a;">The agent attempted to invoke <code>place_order</code>. Execution is provably halted until you authorize.</p>
+              <h3 style="font-size: 1.05rem; font-weight: 700; color: #fbbf24;">🛡️ Human Approval Gate: place_order Intercepted</h3>
+              <p style="font-size: 0.8rem; color: #fde68a;">The agent reached the irreversible procurement action. Execution is strictly halted until you authorize.</p>
             </div>
             <span class="approval-badge">APPROVAL REQUIRED</span>
           </div>

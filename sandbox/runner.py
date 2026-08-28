@@ -3,13 +3,13 @@ Sandbox Execution Engine for TrueForge Agent.
 Safely executes layout placement algorithms and computational geometry scripts in an isolated context,
 returning telemetry, stdout logs, execution timing, and structured coordinate results.
 """
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import io
 import sys
 import time
 import traceback
 import json
-from .layout_algorithm import RoomConfig, compute_layout, LayoutResult
+from .layout_algorithm import pack_furniture_layout, check_overlap
 
 class SandboxExecutionResult:
     def __init__(
@@ -51,11 +51,11 @@ class LayoutSandboxRunner:
         self,
         room_data: Dict[str, Any],
         items_data: list,
+        budget: Optional[float] = None,
         custom_code: Optional[str] = None
     ) -> SandboxExecutionResult:
         """
-        Executes spatial placement algorithm in sandbox.
-        If custom_code is provided, runs it in an isolated global scope with RoomConfig and compute_layout injected.
+        Executes dynamic greedy rectangle packing code in isolated sandbox namespace.
         """
         start_time = time.perf_counter()
         stdout_capture = io.StringIO()
@@ -64,21 +64,27 @@ class LayoutSandboxRunner:
         old_stdout = sys.stdout
         old_stderr = sys.stderr
 
-        default_code = f"""# TrueForge Layout Optimization Sandbox Script
+        width_ft = room_data.get("width_ft", room_data.get("width", 12.0))
+        length_ft = room_data.get("length_ft", room_data.get("length", 10.0))
+        budget_val = budget if budget is not None else room_data.get("budget", 2000.0)
+
+        # Dynamic agent-generated script template
+        default_code = f"""# TrueForge Layout Geometry & Packing Sandbox
 import json
-print(f"[Sandbox] Initializing room grid: {room_data.get('width', 12)}x{room_data.get('length', 10)} ft")
-print(f"[Sandbox] Solving placement constraints for {len(items_data)} items...")
 
-room = RoomConfig(**room_data)
-result = compute_layout(room, items_data)
+print(f"[Sandbox] Initializing room grid: {width_ft} ft x {length_ft} ft (Budget: ${budget_val:.2f})")
+print(f"[Sandbox] Executing greedy 2D rectangle packing for {len(items_data)} items...")
 
-print(f"[Sandbox] Collision check: {{result.collision_count}} collisions, {{result.clearance_violations}} clearance alerts.")
-print(f"[Sandbox] Spatial utilization: {{result.space_utilization_pct}}%, Ergonomic score: {{result.ergonomic_score}}/100")
-sandbox_result = result.model_dump()
+layout_output = pack_furniture_layout(room_data, items_data, budget={budget_val})
+
+print(f"[Sandbox] Packing completed. Placements: {{len(layout_output['placements'])}}, Unplaced: {{len(layout_output['unplaced_item_ids'])}}")
+print(f"[Sandbox] Total cost: ${{layout_output['total_cost']:.2f}}, Fits room & budget: {{layout_output['fits']}}")
+
+sandbox_result = layout_output
 """
         code_to_run = custom_code if custom_code else default_code
 
-        # Strict whitelist of allowed modules in sandbox
+        # Whitelist and security checks
         ALLOWED_MODULES = {"math", "json", "random", "typing", "collections"}
         FORBIDDEN_PATTERNS = ["__subclasses__", "__bases__", "__globals__", "__builtins__", "os.", "sys.", "subprocess", "shutil", "socket", "open("]
 
@@ -116,29 +122,29 @@ sandbox_result = result.model_dump()
                 "isinstance": isinstance,
                 "abs": abs,
                 "zip": zip,
+                "sorted": sorted,
                 "__import__": safe_import,
             }
 
             sandbox_globals = {
-                "RoomConfig": RoomConfig,
-                "compute_layout": compute_layout,
+                "pack_furniture_layout": pack_furniture_layout,
+                "check_overlap": check_overlap,
                 "room_data": room_data,
                 "items_data": items_data,
+                "budget": budget_val,
                 "json": json,
                 "__builtins__": safe_builtins
             }
             sandbox_locals = {}
 
-            # Execute code in isolated namespace
+            # Execute code in isolated sandbox namespace
             exec(code_to_run, sandbox_globals, sandbox_locals)
 
             elapsed_ms = (time.perf_counter() - start_time) * 1000.0
             output_data = sandbox_locals.get("sandbox_result") or sandbox_globals.get("sandbox_result")
 
-            # Fallback if variable wasn't directly assigned in custom script
             if output_data is None:
-                room = RoomConfig(**room_data)
-                output_data = compute_layout(room, items_data).model_dump()
+                output_data = pack_furniture_layout(room_data, items_data, budget_val)
 
             return SandboxExecutionResult(
                 success=True,

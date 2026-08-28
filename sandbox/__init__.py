@@ -1,15 +1,25 @@
 """
-Sandbox package for layout execution and spatial optimization.
+Sandbox package for TrueForge system.
 """
-from .layout_algorithm import RoomConfig, PlacedItem, LayoutResult, compute_layout, check_box_overlap
-from .runner import LayoutSandboxRunner, SandboxExecutionResult, sandbox_runner_instance
+from .layout_algorithm import (
+    RoomDimensions,
+    ItemPlacement,
+    LayoutAlgorithmOutput,
+    pack_furniture_layout,
+    check_overlap
+)
+from .runner import (
+    LayoutSandboxRunner,
+    SandboxExecutionResult,
+    sandbox_runner_instance
+)
 
 __all__ = [
-    "RoomConfig",
-    "PlacedItem",
-    "LayoutResult",
-    "compute_layout",
-    "check_box_overlap",
+    "RoomDimensions",
+    "ItemPlacement",
+    "LayoutAlgorithmOutput",
+    "pack_furniture_layout",
+    "check_overlap",
     "LayoutSandboxRunner",
     "SandboxExecutionResult",
     "sandbox_runner_instance"

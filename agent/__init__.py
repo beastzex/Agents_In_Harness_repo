@@ -7,10 +7,10 @@ from .approval_gate import (
     ApprovalStatus,
     ApprovalBlockedException,
     OrderPayload,
-    OrderItem,
+    OrderItemSummary,
     approval_gate_instance
 )
-from .prompts import SYSTEM_PROMPT
+from .prompts import RENOVATION_ARCHITECT_SYSTEM_PROMPT
 from .engine import (
     AgentEvent,
     TrueForgeAgentSession,
@@ -24,9 +24,9 @@ __all__ = [
     "ApprovalStatus",
     "ApprovalBlockedException",
     "OrderPayload",
-    "OrderItem",
+    "OrderItemSummary",
     "approval_gate_instance",
-    "SYSTEM_PROMPT",
+    "RENOVATION_ARCHITECT_SYSTEM_PROMPT",
     "AgentEvent",
     "TrueForgeAgentSession",
     "TrueForgeAgentRunner",

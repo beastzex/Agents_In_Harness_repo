@@ -1,135 +1,225 @@
-# TrueForge AI Agent Harness: Spatial Layout & Procurement System
+# The Renovation Architect
 
-An autonomous AI agent system combining **Model Context Protocol (MCP)** tool integration, an isolated **Python spatial geometry sandbox**, and a **deterministic Human-in-the-Loop (HITL) approval gate** for procurement actions.
+An autonomous AI agent built on TrueFoundry's **TrueForge** harness for spatial room layout, furniture catalog discovery via **Model Context Protocol (MCP)**, dynamic sandbox layout rectangle-packing, and a deterministic **Human-in-the-Loop (HITL) approval gate** for procurement.
 
 ---
 
-## 🌟 System Overview & Reality Matrix
+## 📡 Frontend API Contract
+
+The backend exposes a clean REST & Server-Sent Events (SSE) API wrapping the TrueForge session.
+
+### 1. Create a Renovation Session
+```http
+POST /session
+Content-Type: application/json
+
+{
+  "room": {
+    "width_ft": 12.0,
+    "length_ft": 10.0
+  },
+  "prompt": "Design modern ergonomic workspace with standing desk, high-back chair, and lighting under $1600",
+  "budget": 1600.0
+}
+```
+**Response:**
+```json
+{
+  "session_id": "sess-a1b2c3d4",
+  "status": "RUNNING",
+  "prompt": "Design modern ergonomic workspace...",
+  "budget": 1600.0,
+  "room": { "width_ft": 12.0, "length_ft": 10.0 },
+  "created_at": 1724900000.0
+}
+```
+
+---
+
+### 2. Live Structured Event Stream (SSE)
+```http
+GET /session/:id/events?from_seq=0
+Accept: text/event-stream
+```
+Streams structured events in real time. Mid-session reconnects pass `from_seq=N` to replay missing events without losing state or restarting the run.
+
+**Event Structure:**
+```typescript
+{
+  type: "reasoning" | "tool_call" | "tool_result" | "sandbox_start" | "sandbox_result" | "approval_required" | "approval_resolved" | "done",
+  sequence: number,
+  timestamp: number,
+  payload: {
+    // Event-specific data
+  }
+}
+```
+
+#### Event Lifecycle Flow:
+1. `reasoning` — Short, 1-line judge-friendly plan narration before acting.
+2. `tool_call` (`search_furniture`) — Targeted MCP catalog query.
+3. `tool_result` (`search_furniture`) — Matching furniture items returned.
+4. `sandbox_start` — Invocation of isolated Python geometry packing engine.
+5. `sandbox_result` — Returned `{ fits: boolean, placements: [...], unplaced_item_ids: [...], total_cost: number, over_budget: boolean }`.
+6. `approval_required` — **Execution halts**. Emitted when agent attempts the gated `place_order` action.
+7. `approval_resolved` — Emitted when human user approves or declines the order.
+8. `done` — Terminal event with final order ID and cost confirmation.
+
+---
+
+### 3. Resolve Human-in-the-Loop Approval Gate
+```http
+POST /session/:id/approve
+Content-Type: application/json
+
+{
+  "approved": true
+}
+```
+**Response:**
+```json
+{
+  "status": "APPROVED",
+  "approval_id": "appr-9f8e7d6c",
+  "token": "4a7b9c... (HMAC-SHA256)",
+  "session_id": "sess-a1b2c3d4"
+}
+```
+*Note: Sending `{"approved": false}` rejects the order and halts execution.*
+
+---
+
+### 4. Fetch Full Current State (Resume / Reconnect)
+```http
+GET /session/:id/state
+```
+**Response:**
+```json
+{
+  "session_id": "sess-a1b2c3d4",
+  "status": "WAITING_FOR_APPROVAL",
+  "prompt": "Design modern ergonomic workspace...",
+  "budget": 1600.0,
+  "room": { "width_ft": 12.0, "length_ft": 10.0 },
+  "mood_board_items": [
+    {
+      "id": "table-apex-standing-60",
+      "name": "ApexPro Motorized Dual-Motor Standing Desk (60x30)",
+      "category": "tables",
+      "price": 499.0,
+      "width_in": 60.0,
+      "depth_in": 30.0,
+      "image_url": "https://images.unsplash.com/...",
+      "style_tags": ["ergonomic", "modern"]
+    }
+  ],
+  "total_cost": 1285.0,
+  "layout_result": {
+    "fits": true,
+    "placements": [
+      { "item_id": "table-apex-standing-60", "x": 0.5, "y": 7.0, "rotation": 0, "width_ft": 5.0, "depth_ft": 2.5 }
+    ],
+    "unplaced_item_ids": [],
+    "total_cost": 1285.0,
+    "over_budget": false
+  },
+  "pending_approval": {
+    "approval_id": "appr-9f8e7d6c",
+    "status": "PENDING",
+    "order_payload": { "total": 1285.0, "item_ids": [...] }
+  },
+  "order_result": null,
+  "event_count": 14
+}
+```
+
+---
+
+## 🌟 Reality Matrix: What is Real vs Mocked
 
 | Component | Status | Implementation Details |
 | :--- | :--- | :--- |
-| **MCP Catalog Server** | **REAL** | Full Model Context Protocol server exposing `search_catalog`, `get_product_details`, and `list_categories` with JSON-RPC 2.0 dispatch. |
-| **Sandbox Layout Engine** | **REAL** | Isolated computational Python execution runtime solving 2D/3D spatial constraints, clearance corridors, and non-overlapping bounding boxes. |
-| **HITL Approval Gate** | **REAL & PROVABLE** | Cryptographically verified approval gate strictly blocking `place_order` execution unless signed user authorization token is provided. Verified via automated tests. |
-| **Real-time SSE Streaming** | **REAL** | Server-Sent Events (SSE) stream broadcasting tool-call start, execution, sandbox stdout, thoughts, and approval state in real-time. |
-| **Mid-Session Resumption** | **REAL** | Reconnect / page reload replays chronological event history and resumes ongoing session without restarting. |
-| **Payment Gateway / Banking** | **INTENTIONALLY MOCKED** | Mocked financial clearing backend simulating order confirmation and receipt generation without live credit card charges. |
+| **MCP Furniture Tools** | **REAL** | Built-in Model Context Protocol server exposing `search_furniture`, `get_item_details`, and `place_order` with JSON-RPC 2.0 dispatch over a 60-item curated catalog. |
+| **Sandbox Layout Packing** | **REAL** | Code is generated and executed inside TrueForge's isolated Python sandbox, computing 2D greedy rectangle packing coordinates `(x, y, rotation)` and collision boundaries. |
+| **HITL Security Gate** | **REAL & PROVABLE** | Cryptographically verified HMAC-SHA256 gate that strictly intercepts and blocks `place_order` unless human approval is confirmed. Verified with automated proof tests. |
+| **SSE Reconnect Stream** | **REAL** | Stateful event bus with chronological replay from sequence `from_seq`, ensuring zero state loss on page reloads. |
+| **Payment Gateway** | **INTENTIONALLY MOCKED** | Mocked financial order confirmation with unique `order_id` and ISO `placed_at` timestamp without live credit card processing. |
 
 ---
 
-## 🏗️ Architecture & Order of Implementation
+## 🛠️ MCP Tool Contracts
 
-```mermaid
-graph TD
-    Client[Web UI / Client Dashboard] -->|SSE Event Stream / REST| API[FastAPI Session Engine]
-    API -->|State Store & Replay| SessionStore[(Session Manager & Event Bus)]
-    API -->|Orchestrate| Agent[TrueForge Agent Engine]
-    Agent -->|1. Query Catalog| MCPServer[MCP Catalog Server]
-    Agent -->|2. Compute Placement| Sandbox[Python Layout Sandbox]
-    Agent -->|3. place_order| Gate{Human Approval Gate}
-    Gate -->|Blocked / No Token| Suspend[Yield approval_required Event]
-    Gate -->|Signed Token| OrderPlaced[Execute Order Confirmation]
-    Suspend -->|User Action| Client
-    Client -->|POST /api/sessions/:id/approve| Gate
-```
+The local MCP server (`mcp_server/server.py`) exposes exactly these three tools:
 
-### Module Structure
-```
-trueforge-layout-agent/
-├── mcp_server/                  # 1. MCP Server & Product Catalog Layer
-│   ├── catalog.py              # Product specifications, dimensions, clearances
-│   ├── server.py               # MCP JSON-RPC 2.0 & FastMCP Tool Registry
-│   └── __init__.py
-├── sandbox/                     # 2. Computational Layout & Geometry Sandbox
-│   ├── layout_algorithm.py     # 2D/3D collision-free spatial layout solver
-│   ├── runner.py               # Isolated Python code runner with telemetry
-│   └── __init__.py
-├── agent/                       # 3. Agent Orchestration & Approval Gate
-│   ├── approval_gate.py        # Non-bypassable HITL security gate
-│   ├── prompts.py              # System prompts & reasoning templates
-│   ├── engine.py               # Event-driven agent execution loop
-│   └── __init__.py
-├── api/                         # 4. API Layer & SSE Event Stream
-│   ├── session_manager.py      # Stateful event bus & reconnect replay
-│   ├── routes.py               # REST & SSE endpoints
-│   ├── app.py                  # FastAPI application
-│   └── __init__.py
-├── tests/                       # 5. Automated Verification Suite
-│   ├── test_mcp_catalog.py
-│   ├── test_sandbox_layout.py
-│   ├── test_place_order_approval_gate.py
-│   ├── test_session_reconnect.py
-│   └── test_e2e.py
-├── frontend/                    # 6. Interactive Visual Dashboard
-│   ├── index.html              # Dark-mode glassmorphic UI
-│   ├── styles.css              # Design system & animations
-│   └── app.js                  # SSE consumer & 2D canvas renderer
-└── README.md
-```
+### 1. `search_furniture`
+- **Input:** `{ query?: string, max_price?: number, category?: string, limit?: number }`
+- **Output:** Array of `{ id: string, name: string, category: string, price: number, image_url: string, width_in: number, depth_in: number, style_tags: string[] }`
+
+### 2. `get_item_details`
+- **Input:** `{ id: string }`
+- **Output:** Full item object above + `description: string`
+
+### 3. `place_order` (Gated Sensitive Action)
+- **Input:** `{ item_ids: string[], session_id?: string, approval_token?: string }`
+- **Output:** `{ order_id: string, items: [...], total: number, placed_at: string (ISO) }`
 
 ---
 
-## 🚀 Quickstart Guide
+## 🚀 Setup & Execution Guide
 
-### 1. Installation & Environment Setup
-Ensure Python 3.10+ is installed:
-```bash
-# Navigate to project workspace
-cd C:\Users\Dalima\.gemini\antigravity-ide\scratch\trueforge-layout-agent
+### 1. Prerequisites
+- Python 3.10+
+- `pip install fastapi uvicorn pydantic pytest pytest-asyncio httpx sse-starlette`
 
-# Install dependencies
-python -m pip install fastapi uvicorn pydantic pytest pytest-asyncio httpx sse-starlette
-```
-
-### 2. Run Automated Test Suite
-To verify that all 20 test cases pass (including the provable approval gate tests and sandbox layout execution):
+### 2. Run Automated Proof Tests
+Verify all 23 test cases (including approval gate security tests and sandbox execution):
 ```bash
 python -m pytest tests/ -v
 ```
 
-### 3. Launch the Application & Web Dashboard
+### 3. Launch Backend & Visualizer
 ```bash
 python -m uvicorn api.app:app --host 127.0.0.1 --port 8000 --reload
 ```
-
-Open your browser and navigate to:
+Navigate to:
 ```
 http://127.0.0.1:8000/app/
 ```
 
 ---
 
-## 🛡️ Provable Security: Human-in-the-Loop Approval Gate
-
-The `place_order` sensitive tool call is protected by a deterministic gate in `agent/approval_gate.py`:
-1. **Unapproved Attempt**: If `place_order` is called by the agent or any client without a signed token, the gate throws an `ApprovalBlockedException`.
-2. **Session Suspension**: The session status transitions to `WAITING_FOR_APPROVAL`, an `approval_required` SSE event is emitted, and execution pauses.
-3. **Cryptographic Token Verification**: When the human approves via `POST /api/sessions/{session_id}/approve`, a SHA-256 token keyed to `(approval_id, session_id, secret_key)` is generated.
-4. **Resumption**: Execution resumes with the validated token, enabling `place_order` to complete.
-
-Automated verification tests in `tests/test_place_order_approval_gate.py` provably assert that:
-- Invocations without approval fail with `ApprovalBlockedException`.
-- Forged or tampered tokens are rejected.
-- Rejected orders halt permanently.
-- Authorized tokens allow execution to proceed.
-
----
-
-## 🔄 Mid-Session Reconnect & Stream Resumption
-
-When a user refreshes the browser or loses network connectivity mid-run:
-- The frontend connects to `GET /api/sessions/{session_id}/stream?from_seq=N`.
-- The `SessionManager` replays all events emitted since `from_seq`.
-- The client seamlessly synchronizes without restarting the agent or re-running prior steps.
-
----
-
-## 📋 Hackathon PR & Process Requirements
-
-Every substantive change in this repository adheres to modular, reviewable units suitable for GitHub PRs and Qodo automated code reviews:
-1. **PR 1**: MCP Server & Catalog Foundation (`mcp_server/`)
-2. **PR 2**: Isolated Spatial Placement Sandbox (`sandbox/`)
-3. **PR 3**: Agent Loop & Provable Approval Gate (`agent/`)
-4. **PR 4**: FastAPI Streaming Server & Reconnection Bus (`api/`)
-5. **PR 5**: Automated Pytest Suite (`tests/`)
-6. **PR 6**: Interactive Visual Canvas Dashboard (`frontend/`)
+## 📁 Repository Structure
+```
+trueforge-layout-agent/
+├── catalog/                     # Seeded furniture catalog (60 items across 5 categories)
+│   └── furniture.json
+├── mcp_server/                  # Model Context Protocol server (3 exact tools)
+│   ├── catalog.py
+│   ├── server.py
+│   └── __init__.py
+├── sandbox/                     # TrueForge computational layout sandbox
+│   ├── layout_algorithm.py     # Greedy 2D rectangle packing solver
+│   ├── runner.py               # Isolated Python code execution runner
+│   └── __init__.py
+├── agent/                       # Agent orchestration & security gate
+│   ├── approval_gate.py        # Non-bypassable HMAC-SHA256 HITL approval gate
+│   ├── prompts.py              # System prompts & reasoning instructions
+│   ├── engine.py               # Targeted multi-step execution loop
+│   └── __init__.py
+├── api/                         # FastAPI REST & SSE layer
+│   ├── session_manager.py      # Stateful event bus & reconnect replay
+│   ├── routes.py               # Endpoints: /session, /session/:id/events, /approve
+│   ├── app.py                  # App entrypoint & CORS config
+│   └── __init__.py
+├── tests/                       # Automated test suite (23 tests)
+│   ├── test_place_order_approval_gate.py
+│   ├── test_mcp_catalog.py
+│   ├── test_sandbox_layout.py
+│   ├── test_session_reconnect.py
+│   └── test_e2e.py
+├── frontend/                    # Interactive visual dashboard
+│   ├── index.html              # Dark-mode UI & controls
+│   ├── styles.css              # Design tokens & animations
+│   └── app.js                  # SSE consumer & 2D canvas visualizer
+└── README.md
+```

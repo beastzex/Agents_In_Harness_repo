@@ -6,7 +6,6 @@ import pytest
 from agent.approval_gate import (
     ApprovalGate,
     OrderPayload,
-    OrderItem,
     ApprovalBlockedException,
     ApprovalStatus
 )
@@ -19,12 +18,12 @@ def fresh_gate():
 def sample_order():
     return OrderPayload(
         order_id="ord-test-8899",
+        item_ids=["chair-ergomaster-pro", "table-apex-standing-60"],
         items=[
-            OrderItem(product_id="desk-apex", name="Apex Desk", price=499.0, category="desk"),
-            OrderItem(product_id="chair-mesh", name="Ergo Chair", price=349.0, category="chair")
+            {"id": "chair-ergomaster-pro", "name": "ErgoMaster Pro Chair", "price": 349.0, "category": "seating"},
+            {"id": "table-apex-standing-60", "name": "ApexPro Standing Desk", "price": 499.0, "category": "tables"}
         ],
-        total_amount=848.0,
-        budget_limit=1000.0
+        total=848.0
     )
 
 def test_place_order_provably_blocked_without_prior_approval(fresh_gate, sample_order):
@@ -47,18 +46,22 @@ def test_place_order_provably_blocked_without_prior_approval(fresh_gate, sample_
     assert "SECURITY GATE BLOCKED" in err.message
     assert err.approval_request.session_id == session_id
     assert err.approval_request.status == ApprovalStatus.PENDING
-    assert err.approval_request.order_payload.total_amount == 848.0
+    assert err.approval_request.order_payload.total == 848.0
 
-    # Verify order was not executed
+    # Verify order was not executed and pending request exists
     pending_req = fresh_gate.get_pending_request(session_id)
     assert pending_req is not None
     assert pending_req.status == ApprovalStatus.PENDING
     assert pending_req.approval_token is None
 
+    # Verify audit log recorded the blocked attempt
+    assert len(fresh_gate.audit_log) >= 1
+    assert fresh_gate.audit_log[-1].status == "BLOCKED"
+
 def test_place_order_provably_blocked_with_tampered_or_invalid_token(fresh_gate, sample_order):
     """
     CRITICAL PROOF TEST:
-    Verifies that presenting a forged or fabricated token fails security validation.
+    Verifies that presenting a forged or fabricated token fails security validation even after approval.
     """
     session_id = "sess-forgery-002"
 
@@ -67,6 +70,9 @@ def test_place_order_provably_blocked_with_tampered_or_invalid_token(fresh_gate,
         fresh_gate.verify_and_execute_order(session_id=session_id, order_payload=sample_order)
 
     approval_id = exc_info.value.approval_request.approval_id
+
+    # Mark as approved so gate proceeds to cryptographic token verification
+    fresh_gate.approve(approval_id)
 
     # Try executing with forged token
     with pytest.raises(ApprovalBlockedException) as forge_exc:
@@ -77,6 +83,7 @@ def test_place_order_provably_blocked_with_tampered_or_invalid_token(fresh_gate,
         )
 
     assert "SECURITY GATE BLOCKED" in forge_exc.value.message
+    assert any(log.status == "BLOCKED_FORGERY" for log in fresh_gate.audit_log)
 
 def test_place_order_provably_blocked_when_user_rejects(fresh_gate, sample_order):
     """
@@ -129,8 +136,7 @@ def test_place_order_succeeds_only_after_valid_human_authorization(fresh_gate, s
         approval_token=approved_req.approval_token
     )
 
-    assert result["status"] == "success"
-    assert result["approval_status"] == "APPROVED"
-    assert result["total_charged"] == 848.0
+    assert result["total"] == 848.0
     assert result["order_id"] == sample_order.order_id
     assert len(result["items"]) == 2
+    assert "placed_at" in result
