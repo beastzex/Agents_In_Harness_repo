@@ -34,7 +34,6 @@ COPY api/ ./api/
 COPY mcp_server/ ./mcp_server/
 COPY sandbox/ ./sandbox/
 COPY catalog/ ./catalog/
-COPY .env* ./
 
 # Copy built React frontend assets from Stage 1
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist

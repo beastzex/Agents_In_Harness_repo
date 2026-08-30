@@ -1,0 +1,30 @@
+# ─────────────────────────────────────────────────────────────
+# Dockerignore: Exclude secrets, build artifacts, and large media
+# ─────────────────────────────────────────────────────────────
+
+# Secrets & Environment Files
+.env
+.env.*
+!.env.example
+
+# Local Python Environment
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local Node & Build Outputs
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Git & Large Media
+.git/
+.github/
+demo_videos/
+*.mp4
+*.webm
+*.mov

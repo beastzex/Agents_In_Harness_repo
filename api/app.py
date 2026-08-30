@@ -52,15 +52,6 @@ app.add_middleware(
 
 app.include_router(router)
 
-# Mount frontend built production assets if dist exists, otherwise fallback to frontend dir
-frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
-frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
-
-if os.path.exists(frontend_dist):
-    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend-dist")
-elif os.path.exists(frontend_dir):
-    app.mount("/app", StaticFiles(directory=frontend_dir, html=True), name="frontend")
-
 @app.get("/health")
 async def health_check():
     return {
@@ -70,6 +61,15 @@ async def health_check():
         "sandbox_runner": "active",
         "approval_gate": "active"
     }
+
+# Mount frontend built production assets if dist exists, otherwise fallback to frontend dir
+frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
+frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+
+if os.path.exists(frontend_dist):
+    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend-dist")
+elif os.path.exists(frontend_dir):
+    app.mount("/app", StaticFiles(directory=frontend_dir, html=True), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
