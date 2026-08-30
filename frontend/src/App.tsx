@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { LandingPage } from './components/landing/LandingPage';
 import { StudioPage } from './components/studio/StudioPage';
 import { ViewTransition } from './components/transition/ViewTransition';
+import { InitialPreloader } from './components/transition/InitialPreloader';
 import { useLenis } from './hooks/useLenis';
 import './styles/tokens.css';
 import './styles/landing.css';
@@ -31,7 +32,10 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-root">
-      {/* Step 8: Full-Screen Terracotta Wipe Transition Overlay */}
+      {/* Initial Smooth Orange Loading Screen */}
+      <InitialPreloader />
+
+      {/* View Transition Wipe Overlay */}
       <ViewTransition
         isTransitioning={isTransitioning}
         onMidpoint={handleTransitionMidpoint}

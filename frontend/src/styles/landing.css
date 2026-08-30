@@ -2202,3 +2202,21 @@
     display: none;
   }
 }
+
+@keyframes preloaderPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.preloader-dot-pulse {
+  display: inline-block;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  animation: preloaderPulse 1.2s infinite ease-in-out;
+}
