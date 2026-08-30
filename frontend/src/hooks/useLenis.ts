@@ -5,9 +5,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export const useLenis = () => {
+export const useLenis = (enabled: boolean = true) => {
   useEffect(() => {
-    // Initialize Lenis smooth scroll
+    if (!enabled) return;
+
+    // Initialize Lenis smooth scroll for landing page
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -32,5 +34,5 @@ export const useLenis = () => {
       gsap.ticker.remove(updateTicker);
       lenis.destroy();
     };
-  }, []);
+  }, [enabled]);
 };

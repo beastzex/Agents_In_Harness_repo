@@ -54,7 +54,7 @@ export const MoodBoard: React.FC<MoodBoardProps> = ({
   }, [items]);
 
   return (
-    <div className="mood-board-panel" ref={boardRef}>
+    <div className="mood-board-panel" ref={boardRef} data-lenis-prevent="true">
       {/* Board Header Bar */}
       <div className="mood-board-header">
         <div className="board-title-col">

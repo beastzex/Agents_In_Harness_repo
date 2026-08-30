@@ -9,8 +9,8 @@ import './styles/landing.css';
 import './styles/studio.css';
 
 export const App: React.FC = () => {
-  useLenis();
   const [currentView, setCurrentView] = useState<'landing' | 'studio'>('landing');
+  useLenis(currentView === 'landing');
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [isInitialLoaded, setIsInitialLoaded] = useState<boolean>(false);
 

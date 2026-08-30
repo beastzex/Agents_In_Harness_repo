@@ -186,9 +186,9 @@ export const StudioWorkspace: React.FC<StudioWorkspaceProps> = ({
       </header>
 
       {/* Main Split-Screen Workspace (B2 Activity Feed Left, B3 Mood Board Right) */}
-      <main className="workspace-split-layout">
+      <main className="workspace-split-layout" data-lenis-prevent="true">
         {/* Left: Activity Feed (B2) */}
-        <section className="split-col-feed">
+        <section className="split-col-feed" data-lenis-prevent="true">
           <ActivityFeed
             events={events}
             activeFilter={activeFilter}
@@ -199,7 +199,7 @@ export const StudioWorkspace: React.FC<StudioWorkspaceProps> = ({
         </section>
 
         {/* Right: Mood Board & Budget (B3) */}
-        <section className="split-col-board">
+        <section className="split-col-board" data-lenis-prevent="true">
           <MoodBoard
             items={placedItems}
             roomSpec={roomSpec}

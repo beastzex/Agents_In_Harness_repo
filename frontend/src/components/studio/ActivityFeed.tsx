@@ -104,7 +104,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       </div>
 
       {/* Events List Container */}
-      <div className="feed-scroll-container" ref={feedContainerRef}>
+      <div className="feed-scroll-container" ref={feedContainerRef} data-lenis-prevent="true">
         {filteredEvents.length === 0 ? (
           <div className="feed-empty-state">
             <Loader2 size={24} className="spinning-icon" />
