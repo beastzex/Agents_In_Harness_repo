@@ -1,65 +1,87 @@
 """
 Unit tests for MCP Server and Catalog query functions.
+Verifies exact tool contracts for search_furniture, get_item_details, and place_order.
 """
 import pytest
 from mcp_server.catalog import (
-    search_catalog_data,
-    get_product_by_id,
+    search_furniture_data,
+    get_item_details_data,
     get_categories,
     CATALOG_ITEMS
 )
 from mcp_server.server import MCPServer, mcp_server_instance
 
 def test_catalog_items_populated():
-    """Verify default catalog contains diverse furniture and electronics."""
-    assert len(CATALOG_ITEMS) >= 10
+    """Verify catalog contains 50+ diverse items across all 5 core categories."""
+    assert len(CATALOG_ITEMS) >= 50
     categories = get_categories()
-    assert "desk" in categories
-    assert "chair" in categories
-    assert "monitor" in categories
+    assert "seating" in categories
+    assert "tables" in categories
+    assert "lighting" in categories
     assert "storage" in categories
+    assert "decor" in categories
 
-def test_search_catalog_by_category():
+def test_search_furniture_by_category():
     """Verify filtering products by category."""
-    desks = search_catalog_data(category="desk")
-    assert len(desks) > 0
-    assert all(item.category == "desk" for item in desks)
+    seating = search_furniture_data(category="seating")
+    assert len(seating) > 0
+    assert all(item["category"] == "seating" for item in seating)
+    # Check item schema
+    first = seating[0]
+    assert "id" in first
+    assert "name" in first
+    assert "price" in first
+    assert "image_url" in first
+    assert "width_in" in first
+    assert "depth_in" in first
+    assert "style_tags" in first
 
-def test_search_catalog_by_max_price():
+def test_search_furniture_by_max_price():
     """Verify price cap filtering."""
-    affordable = search_catalog_data(max_price=300.0)
+    affordable = search_furniture_data(max_price=100.0)
     assert len(affordable) > 0
-    assert all(item.price <= 300.0 for item in affordable)
+    assert all(item["price"] <= 100.0 for item in affordable)
 
-def test_search_catalog_query_keyword():
-    """Verify keyword text search across names and features."""
-    ergonomic = search_catalog_data(query="lumbar")
+def test_search_furniture_query_keyword():
+    """Verify keyword text search across names and style tags."""
+    ergonomic = search_furniture_data(query="ergonomic")
     assert len(ergonomic) > 0
-    assert any("lumbar" in item.description.lower() or any("lumbar" in f.lower() for f in item.features) for item in ergonomic)
 
-def test_get_product_by_id():
-    """Verify product retrieval by exact ID."""
-    prod = get_product_by_id("desk-apex-standing")
-    assert prod is not None
-    assert prod.name == "ApexPro Electric Standing Desk (60x30)"
-    assert prod.width == 5.0
-    assert prod.depth == 2.5
+def test_get_item_details_by_id():
+    """Verify full item details retrieval including description."""
+    item = get_item_details_data("chair-ergomaster-pro")
+    assert item is not None
+    assert item["name"] == "ErgoMaster Pro High-Back Mesh Chair"
+    assert item["price"] == 349.0
+    assert item["width_in"] == 26.0
+    assert item["depth_in"] == 26.0
+    assert "description" in item
+    assert len(item["description"]) > 10
 
 def test_mcp_server_tool_definitions():
-    """Verify standard MCP tool declarations."""
+    """Verify exact 3 standard MCP tool declarations."""
     tools = mcp_server_instance.list_tools()
     tool_names = [t["name"] for t in tools]
-    assert "search_catalog" in tool_names
-    assert "get_product_details" in tool_names
-    assert "list_categories" in tool_names
+    assert "search_furniture" in tool_names
+    assert "get_item_details" in tool_names
+    assert "place_order" in tool_names
 
-def test_mcp_server_execute_tool():
+def test_mcp_server_execute_search_tool():
     """Verify tool execution returns structured MCP result."""
-    res = mcp_server_instance.execute_tool("search_catalog", {"category": "chair"})
+    res = mcp_server_instance.execute_tool("search_furniture", {"category": "tables", "limit": 4})
     assert res["status"] == "success"
     assert res["count"] > 0
     assert "data" in res
     assert "content" in res
+
+def test_mcp_server_place_order_gated():
+    """Verify executing place_order without token returns blocked status."""
+    res = mcp_server_instance.execute_tool("place_order", {
+        "item_ids": ["chair-ergomaster-pro", "table-apex-standing-60"],
+        "session_id": "sess-direct-test"
+    })
+    assert res["status"] == "blocked"
+    assert "approval_id" in res
 
 def test_mcp_server_json_rpc():
     """Verify JSON-RPC 2.0 protocol compliance."""
@@ -68,11 +90,11 @@ def test_mcp_server_json_rpc():
         "id": 42,
         "method": "tools/call",
         "params": {
-            "name": "get_product_details",
-            "arguments": {"product_id": "chair-ergohuman-mesh"}
+            "name": "get_item_details",
+            "arguments": {"id": "table-apex-standing-60"}
         }
     }
     rpc_res = mcp_server_instance.handle_json_rpc(rpc_req)
     assert rpc_res["id"] == 42
     assert "result" in rpc_res
-    assert rpc_res["result"]["data"]["id"] == "chair-ergohuman-mesh"
+    assert rpc_res["result"]["data"]["id"] == "table-apex-standing-60"

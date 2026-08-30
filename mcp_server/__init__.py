@@ -1,14 +1,24 @@
 """
-MCP Server package for TrueForge agent system.
+MCP Server package for TrueForge system.
 """
-from .catalog import Product, CATALOG_ITEMS, search_catalog_data, get_product_by_id, get_categories
-from .server import MCPServer, mcp_server_instance, MCP_TOOL_DEFINITIONS
+from .catalog import (
+    FurnitureItem,
+    CATALOG_ITEMS,
+    search_furniture_data,
+    get_item_details_data,
+    get_categories
+)
+from .server import (
+    MCPServer,
+    mcp_server_instance,
+    MCP_TOOL_DEFINITIONS
+)
 
 __all__ = [
-    "Product",
+    "FurnitureItem",
     "CATALOG_ITEMS",
-    "search_catalog_data",
-    "get_product_by_id",
+    "search_furniture_data",
+    "get_item_details_data",
     "get_categories",
     "MCPServer",
     "mcp_server_instance",
