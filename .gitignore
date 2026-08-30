@@ -1,111 +1,45 @@
-# =============================================================================
-# Gitignore for The Renovation Architect (TrueForge Agent Harness)
-# =============================================================================
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# --- Byte-compiled / optimized / DLL files ---
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.pyd
-*.dll
-*.dylib
-
-# --- Distribution / Packaging ---
-.Python
-build/
-develop-eggs/
+# Production & Build outputs
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+build/
+.vite/
 
-# --- PyInstaller & Executables ---
-*.manifest
-*.spec
-
-# --- Installer logs ---
+# Python / Backend
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# --- Unit test / Coverage reports ---
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-pytestdebug.log
-
-# --- Environments & Secrets ---
-# Never commit actual secret keys or environment configs
+# Environment Variables
 .env
-.env.*
-!.env.example
-.venv
-.venv/
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-virtualenv/
-*.pem
-*.key
-*.secret
-*.p12
-*.pfx
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# --- Node / Frontend Artifacts ---
-node_modules/
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
-dist-ssr/
-*.local
-
-# --- IDEs and Editors ---
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-*.sublime-workspace
-*.sublime-project
-
-# --- Operating System Artifacts ---
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-desktop.ini
-
-# --- Logs, Databases & Temporary Files ---
-logs/
 *.log
-*.sqlite3
-*.db
-tmp/
-temp/
-scratch/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store

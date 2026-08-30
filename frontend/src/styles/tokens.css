@@ -1,0 +1,97 @@
+/* ==========================================================================
+   ReDessIo Design System Tokens
+   Palette & Typography faithfully matched to the AiID 26 inspiration design
+   ========================================================================== */
+
+:root {
+  /* Surface & Backgrounds */
+  --bg-stone: #FFFFFF;
+  --bg-stone-subtle: #FAFAFA;
+  --bg-stone-deep: #F0F0F0;
+  --bg-card: #FFFFFF;
+  --bg-card-muted: #F5F5F5;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Typography Colors */
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --text-tertiary: #666666;
+  --text-inverted: #FFFFFF;
+
+  /* Signature AiID 26 Theme Accents */
+  --accent-terracotta: #FF5B35;
+  --accent-terracotta-hover: #E04622;
+  --accent-terracotta-subtle: #FFF0EC;
+  --accent-lilac: #D2C2F8;
+  --accent-mint: #CDE3D5;
+  --accent-forest: #1F382B;
+  --accent-forest-light: #EBF3EE;
+
+  /* Safety & Authorization Accents */
+  --accent-rust: #FF5B35;
+  --accent-rust-subtle: #FFF0EC;
+  --accent-success: #1E6B39;
+
+  /* Crisp Hairline Borders */
+  --border-light: rgba(0, 0, 0, 0.12);
+  --border-strong: #000000;
+  --border-dark: #000000;
+
+  /* Typography Hierarchy - Space Grotesk & Space Mono */
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --font-sans: 'Inter', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Space Mono', 'JetBrains Mono', monospace;
+
+  /* Motion & Physics Tokens */
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-micro: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-micro: 180ms;
+  --duration-reveal: 600ms;
+  --duration-transition: 900ms;
+
+  /* Layout Spacers */
+  --container-max: 1440px;
+  --header-height: 56px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--bg-stone);
+  color: var(--text-primary);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--bg-stone);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
