@@ -11,26 +11,23 @@ export const App: React.FC = () => {
   useLenis();
   const [currentView, setCurrentView] = useState<'landing' | 'studio'>('landing');
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  const [targetView, setTargetView] = useState<'landing' | 'studio'>('landing');
 
   const handleLaunchStudio = () => {
-    setTargetView('studio');
     setIsTransitioning(true);
   };
 
   const handleBackToLanding = () => {
-    setTargetView('landing');
     setIsTransitioning(true);
   };
 
-  const handleTransitionMidpoint = () => {
-    setCurrentView(targetView);
+  const handleTransitionMidpoint = React.useCallback(() => {
+    setCurrentView((prev) => (prev === 'landing' ? 'studio' : 'landing'));
     window.scrollTo({ top: 0, behavior: 'instant' });
-  };
+  }, []);
 
-  const handleTransitionComplete = () => {
+  const handleTransitionComplete = React.useCallback(() => {
     setIsTransitioning(false);
-  };
+  }, []);
 
   return (
     <div className="app-root">

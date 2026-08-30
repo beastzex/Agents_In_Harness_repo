@@ -38,7 +38,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
   const estimatedShipping = 145;
   const grandTotal = subtotal + estimatedTax + estimatedShipping;
 
-  // 1. Entrance animation: backdrop blurs first, modal scales 0.95 -> 1 with weight ~150ms after
+  // 1. Entrance animation & ESC key handler
   useEffect(() => {
     if (isOpen && backdropRef.current && modalRef.current) {
       setIsApprovedState(false);
@@ -56,7 +56,16 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
         { scale: 1, opacity: 1, y: 0, duration: 0.5, delay: 0.15, ease: 'power3.out' }
       );
     }
-  }, [isOpen]);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   // Handle Press-and-Hold 1.2s confirm interaction
   const startHold = () => {
@@ -159,14 +168,24 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
                 <Lock size={15} />
                 <span>EXPLICIT AUTHORIZATION GATE</span>
               </div>
-              <button
-                type="button"
-                className="btn-modal-close"
-                onClick={onClose}
-                aria-label="Close modal"
-              >
-                <X size={20} />
-              </button>
+              <div className="modal-header-actions">
+                <button
+                  type="button"
+                  className="btn-modal-back"
+                  onClick={onClose}
+                >
+                  <span>← Back to Workspace</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-modal-close"
+                  onClick={onClose}
+                  aria-label="Close modal"
+                  title="Close (Esc)"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Modal Body */}
@@ -186,8 +205,8 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
                 </div>
 
                 <div className="itemized-list">
-                  {items.map((item) => (
-                    <div key={item.id} className="itemized-row">
+                  {items.map((item, index) => (
+                    <div key={`${item.id}-${index}`} className="itemized-row">
                       <div className="item-name-col">
                         <strong>{item.name}</strong>
                         <span className="item-vendor-small">{item.vendor}</span>
@@ -277,14 +296,21 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
                 </div>
               </div>
 
-              {/* Reject / Refine Action */}
+              {/* Reject / Return Actions */}
               <div className="approval-footer-actions">
+                <button
+                  type="button"
+                  className="btn-modal-cancel"
+                  onClick={onClose}
+                >
+                  ← Return to Workspace (Keep Reviewing)
+                </button>
                 <button
                   type="button"
                   className="btn-reject-refine"
                   onClick={handleRejectAction}
                 >
-                  Reject &amp; Refine Design Parameters
+                  Reject Order &amp; Refine Parameters
                 </button>
               </div>
             </div>

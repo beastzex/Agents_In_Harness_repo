@@ -640,5 +640,93 @@
     "depth_in": 8.0,
     "style_tags": ["executive", "luxury", "warm"],
     "description": "Vegetable-tanned saddle leather desktop catchall with antique brass snap corners for keys and accessories."
+  },
+  {
+    "id": "bed-nordic-king-oak",
+    "name": "Nordic Solid White Oak King Platform Bed",
+    "category": "beds",
+    "price": 980.00,
+    "image_url": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80",
+    "width_in": 76.0,
+    "depth_in": 84.0,
+    "style_tags": ["warm-minimalist", "scandinavian", "modern", "natural"],
+    "description": "Architectural low-profile platform bed with integrated headboard ledge crafted from solid FSC-certified European white oak with slat support."
+  },
+  {
+    "id": "bed-haven-queen-boucle",
+    "name": "Haven Queen Bouclé Upholstered Platform Bed",
+    "category": "beds",
+    "price": 750.00,
+    "image_url": "https://images.unsplash.com/photo-1540518614846-7ede433c4ef2?auto=format&fit=crop&w=600&q=80",
+    "width_in": 64.0,
+    "depth_in": 84.0,
+    "style_tags": ["cozy", "modern", "warm-minimalist", "luxury"],
+    "description": "Textured cream wool bouclé upholstered bed with padded channel headboard and recessed matte black steel base."
+  },
+  {
+    "id": "bed-zen-walnut-platform",
+    "name": "Zenith Walnut Japanese Low Platform Bed",
+    "category": "beds",
+    "price": 890.00,
+    "image_url": "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80",
+    "width_in": 72.0,
+    "depth_in": 82.0,
+    "style_tags": ["minimalist", "luxury", "japanese", "warm"],
+    "description": "Floating cantilevered walnut platform bed with integrated tatami mat recess and soft ambient under-glow."
+  },
+  {
+    "id": "nightstand-nordic-oak",
+    "name": "Nordic Oak 2-Drawer Floating Bedside Nightstand",
+    "category": "nightstands",
+    "price": 185.00,
+    "image_url": "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=600&q=80",
+    "width_in": 20.0,
+    "depth_in": 16.0,
+    "style_tags": ["scandinavian", "warm-minimalist", "modern"],
+    "description": "Floating wall-mounted bedside table in solid white oak with soft-close mitered drawer and hidden cable route."
+  },
+  {
+    "id": "nightstand-walnut-shelf",
+    "name": "Klint Walnut Minimalist Open-Shelf Bedside Table",
+    "category": "nightstands",
+    "price": 160.00,
+    "image_url": "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=600&q=80",
+    "width_in": 18.0,
+    "depth_in": 16.0,
+    "style_tags": ["mid-century", "modern", "minimalist"],
+    "description": "Solid walnut side table with lower book shelf and tapered brass-capped legs."
+  },
+  {
+    "id": "dresser-nordic-6-drawer",
+    "name": "Nordic 6-Drawer Solid White Oak Bedroom Dresser",
+    "category": "storage",
+    "price": 680.00,
+    "image_url": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80",
+    "width_in": 56.0,
+    "depth_in": 19.0,
+    "style_tags": ["scandinavian", "warm-minimalist", "modern"],
+    "description": "Generous 6-drawer double dresser with recessed finger pulls and soft-closing under-mount German slides."
+  },
+  {
+    "id": "lamp-bedside-ceramic",
+    "name": "Terra Warm Ceramic Bedside Ambient Lamp",
+    "category": "lighting",
+    "price": 85.00,
+    "image_url": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80",
+    "width_in": 12.0,
+    "depth_in": 12.0,
+    "style_tags": ["warm-minimalist", "cozy", "scandinavian"],
+    "description": "Handmade textured stoneware clay table lamp with linen drum shade and dimmable 2700K warm glow."
+  },
+  {
+    "id": "rug-plush-boucle-bedroom",
+    "name": "Cloud Plush Wool Bouclé Bedroom Area Rug (8x10)",
+    "category": "rugs",
+    "price": 380.00,
+    "image_url": "https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&w=600&q=80",
+    "width_in": 96.0,
+    "depth_in": 120.0,
+    "style_tags": ["cozy", "warm-minimalist", "scandinavian"],
+    "description": "Ultra-soft un-dyed high-pile New Zealand wool area rug with ribbed texture designed to anchor a king or queen bed."
   }
 ]

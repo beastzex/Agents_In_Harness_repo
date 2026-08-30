@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Sparkles, Github, ArrowUpRight } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -15,17 +15,17 @@ export const Footer: React.FC<FooterProps> = ({ onLaunchStudio }) => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        '.footer-top-container, .footer-watermark-row, .footer-bottom-bar',
-        { y: 25, opacity: 0 },
+        ['.grand-footer-top', '.grand-footer-headline', '.grand-footer-bottom-split'],
+        { y: 40, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          duration: 0.7,
-          stagger: 0.12,
+          duration: 0.85,
+          stagger: 0.15,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: footerRef.current,
-            start: 'top 85%',
+            start: 'top 80%',
           },
         }
       );
@@ -35,78 +35,87 @@ export const Footer: React.FC<FooterProps> = ({ onLaunchStudio }) => {
   }, []);
 
   return (
-    <footer className="site-footer" id="about" ref={footerRef}>
-      <div className="footer-top-container">
-        {/* Brand Column */}
-        <div className="footer-brand-col">
-          <div className="footer-brand-logo">
-            <span className="brand-primary">ReDessIo</span>
-            <span className="brand-badge">ARCHITECT</span>
+    <footer className="grand-editorial-footer" id="about" ref={footerRef}>
+      {/* 1. Top Minimalist Bar */}
+      <div className="grand-footer-top">
+        <div className="grand-footer-brand-lockup">
+          <div className="grand-brand-badge">
+            <span>ReDessIo</span>
+            <span className="brand-badge-sup">26</span>
           </div>
-          <p className="footer-mission">
-            The autonomous spatial renovation agent with hard-coded financial safety gates. Built with real MCP tool execution, sandboxed constraint mathematics, and human-in-the-loop governance.
-          </p>
-          <div className="footer-tagline">
-            <Sparkles size={14} className="tagline-icon" />
-            <span>Built for the Agent Harness Hackathon 2026</span>
-          </div>
+          <button 
+            type="button" 
+            className="grand-btn-cta"
+            onClick={onLaunchStudio}
+          >
+            <span>Launch Studio</span>
+            <Plus size={16} />
+          </button>
         </div>
 
-        {/* Links Columns */}
-        <div className="footer-links-grid">
-          <div className="footer-col">
-            <span className="footer-col-title">NAVIGATION</span>
-            <ul className="footer-list">
-              <li><a href="#hero">Overview</a></li>
-              <li><a href="#moves">The Four Moves</a></li>
-              <li><a href="#pillars">Three Pillars</a></li>
-              <li><a href="#demo">Demo Video</a></li>
-            </ul>
+        <nav className="grand-footer-nav-top">
+          <a href="#about" className="grand-top-link">About</a>
+          <a href="#projects" className="grand-top-link">
+            <span>Sub-Agents</span>
+            <Plus size={14} />
+          </a>
+          <a href="#experience" className="grand-top-link">
+            <span>Case Studies</span>
+            <Plus size={14} />
+          </a>
+        </nav>
+      </div>
+
+      {/* 2. Massive Display Headline Spanning Entire Width */}
+      <div className="grand-footer-headline-wrap">
+        <h2 className="grand-footer-headline">
+          Agents in Design
+        </h2>
+      </div>
+
+      {/* 3. Bottom Split Layout: Partners & Links on Left, Huge '2026' on Right */}
+      <div className="grand-footer-bottom-split">
+        {/* Left Column: Partners & Navigation */}
+        <div className="grand-footer-meta-cols">
+          <div className="grand-meta-col">
+            <span className="grand-col-eyebrow">HACKATHON PARTNERS</span>
+            <div className="grand-partners-grid">
+              <div className="partner-item">Anthropic</div>
+              <div className="partner-item">TrueFoundry</div>
+              <div className="partner-item">Qodo</div>
+              <div className="partner-item">Linear</div>
+              <div className="partner-item">MCP Protocol</div>
+              <div className="partner-item">Docker Sandboxes</div>
+            </div>
           </div>
 
-          <div className="footer-col">
-            <span className="footer-col-title">PRODUCT</span>
-            <ul className="footer-list">
+          <div className="grand-meta-col">
+            <span className="grand-col-eyebrow">HARNESS</span>
+            <ul className="grand-links-list">
               <li>
-                <button type="button" onClick={onLaunchStudio} className="footer-action-link">
+                <button type="button" onClick={onLaunchStudio} className="grand-inline-link">
                   Launch Studio
-                  <ArrowUpRight size={14} />
                 </button>
               </li>
-              <li><a href="#partners">Integrations</a></li>
-              <li><a href="#stats">Benchmarks</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-col">
-            <span className="footer-col-title">COMMUNITY & REPO</span>
-            <ul className="footer-list">
+              <li><a href="#moves">The Four Moves</a></li>
+              <li><a href="#pillars">Architecture</a></li>
+              <li><a href="#demo">Live Demo</a></li>
               <li>
-                <a href="https://github.com" target="_blank" rel="noreferrer" className="footer-social-link">
-                  <Github size={15} />
-                  <span>GitHub Repository</span>
+                <a 
+                  href="https://github.com/beastzex/Agents_In_Harness_repo" 
+                  target="_blank" 
+                  rel="noreferrer"
+                >
+                  GitHub Repository
                 </a>
               </li>
-              <li><a href="#about">Project Documentation</a></li>
             </ul>
           </div>
         </div>
-      </div>
 
-      {/* Giant Watermark Typography (like stateofaidesign.com 2026 footer watermark) */}
-      <div className="footer-watermark-row" aria-hidden="true">
-        <span className="footer-watermark">ReDessIo 2026</span>
-      </div>
-
-      {/* Footer Bottom Bar */}
-      <div className="footer-bottom-bar">
-        <div className="footer-bottom-content">
-          <span className="footer-copyright">
-            © 2026 ReDessIo. All rights reserved.
-          </span>
-          <span className="footer-credits">
-            Powered by TrueFoundry &amp; Qodo · Designed with Warm Light Editorial Aesthetics
-          </span>
+        {/* Right Column: Giant Year / Edition Typography */}
+        <div className="grand-footer-year-col">
+          <span className="grand-giant-year">2026</span>
         </div>
       </div>
     </footer>

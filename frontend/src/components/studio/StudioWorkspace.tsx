@@ -32,8 +32,41 @@ export const StudioWorkspace: React.FC<StudioWorkspaceProps> = ({
       setEvents((prev) => [...prev, event]);
 
       if (event.type === 'moodboard_add' && event.meta?.item) {
-        setPlacedItems((prev) => [...prev, event.meta!.item!]);
-        setCurrentSpend((prev) => prev + event.meta!.item!.price);
+        const newItem = event.meta.item;
+        setPlacedItems((prev) => {
+          if (prev.some((p) => p.id === newItem.id)) {
+            return prev;
+          }
+          return [...prev, newItem];
+        });
+        setCurrentSpend((prev) => {
+          return prev + (newItem.price || 0);
+        });
+      }
+
+      if (event.type === 'sandbox_result' && (event.meta as any)?.placements) {
+        const placementsList = (event.meta as any).placements as any[];
+        if (Array.isArray(placementsList) && placementsList.length > 0) {
+          const placementMap = new Map(
+            placementsList.map((p) => [p.item_id || p.id, p])
+          );
+          setPlacedItems((prev) =>
+            prev.map((item) => {
+              const p = placementMap.get(item.id);
+              if (p) {
+                return {
+                  ...item,
+                  xFt: p.x,
+                  yFt: p.y,
+                  rotationDeg: p.rotation || 0,
+                  widthFt: p.width_ft || item.widthFt,
+                  depthFt: p.depth_ft || item.depthFt,
+                };
+              }
+              return item;
+            })
+          );
+        }
       }
 
       if (event.type === 'agent_halt_for_approval') {
@@ -78,11 +111,12 @@ export const StudioWorkspace: React.FC<StudioWorkspaceProps> = ({
     setIsApproved(true);
     setIsHaltedForApproval(false);
     setIsModalOpen(false);
+    agentSessionEmitter.approveCurrentSession();
   };
 
   const handleReject = () => {
     setIsModalOpen(false);
-    // Allow user to continue interacting with the moodboard
+    agentSessionEmitter.rejectCurrentSession();
   };
 
   return (
@@ -172,6 +206,7 @@ export const StudioWorkspace: React.FC<StudioWorkspaceProps> = ({
             currentSpend={currentSpend}
             onOpenApproval={() => setIsModalOpen(true)}
             isHaltedForApproval={isHaltedForApproval && !isApproved}
+            onUpdateItems={setPlacedItems}
           />
         </section>
       </main>

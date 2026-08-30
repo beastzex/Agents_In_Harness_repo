@@ -20,10 +20,13 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   const feedEndRef = useRef<HTMLDivElement>(null);
   const feedContainerRef = useRef<HTMLDivElement>(null);
 
-  // Smooth auto-scroll to bottom on new event arrival
+  // Smooth auto-scroll to bottom on new event arrival inside feed container only
   useEffect(() => {
-    if (feedEndRef.current) {
-      feedEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (feedContainerRef.current) {
+      feedContainerRef.current.scrollTo({
+        top: feedContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     }
   }, [events]);
 

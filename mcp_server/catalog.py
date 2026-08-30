@@ -87,11 +87,13 @@ def search_furniture_data(
             # Map common category synonyms
             category_matches = (
                 item_cat == cat_lower or
-                (cat_lower in ["seating", "chair", "chairs", "seat"] and item_cat in ["seating", "chair"]) or
+                (cat_lower in ["beds", "bed", "bedframe", "platform bed", "mattress"] and item_cat in ["beds", "bed"]) or
+                (cat_lower in ["nightstands", "nightstand", "bedside", "side table"] and item_cat in ["nightstands", "nightstand", "tables"]) or
+                (cat_lower in ["seating", "chair", "chairs", "seat", "sofa", "couch"] and item_cat in ["seating", "chair"]) or
                 (cat_lower in ["tables", "table", "desk", "desks"] and item_cat in ["tables", "desk"]) or
                 (cat_lower in ["lighting", "light", "lamps", "lamp"] and item_cat in ["lighting", "light"]) or
-                (cat_lower in ["storage", "shelves", "bookshelf", "cabinet"] and item_cat in ["storage"]) or
-                (cat_lower in ["decor", "decoration", "accessories", "accessory", "rug", "plant"] and item_cat in ["decor", "accessory"])
+                (cat_lower in ["storage", "shelves", "bookshelf", "cabinet", "dresser", "wardrobe"] and item_cat in ["storage"]) or
+                (cat_lower in ["decor", "decoration", "accessories", "accessory", "rug", "plant", "rugs"] and item_cat in ["decor", "accessory", "rugs"])
             )
             if not category_matches:
                 continue
@@ -121,6 +123,10 @@ def search_furniture_data(
 
         if len(results) >= limit:
             break
+
+    if len(results) == 0 and query:
+        # Fall back to category-only search if query was too narrow
+        return search_furniture_data(query=None, max_price=max_price, category=category, limit=limit)
 
     return results
 

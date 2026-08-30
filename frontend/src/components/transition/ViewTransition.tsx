@@ -14,10 +14,17 @@ export const ViewTransition: React.FC<ViewTransitionProps> = ({
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
+  const midpointRef = useRef(onMidpoint);
+  const completeRef = useRef(onComplete);
+  const isRunningRef = useRef(false);
+
+  midpointRef.current = onMidpoint;
+  completeRef.current = onComplete;
 
   useEffect(() => {
-    if (!isTransitioning || !panelRef.current) return;
+    if (!isTransitioning || !panelRef.current || isRunningRef.current) return;
 
+    isRunningRef.current = true;
     const panel = panelRef.current;
     const text = textRef.current;
 
@@ -28,14 +35,15 @@ export const ViewTransition: React.FC<ViewTransitionProps> = ({
     const tl = gsap.timeline({
       onComplete: () => {
         gsap.set(panel, { display: 'none', yPercent: 100 });
-        onComplete();
+        isRunningRef.current = false;
+        completeRef.current();
       },
     });
 
-    // 1. Wipe upward to cover viewport (~500ms)
+    // 1. Wipe upward to cover viewport (~450ms)
     tl.to(panel, {
       yPercent: 0,
-      duration: 0.52,
+      duration: 0.45,
       ease: 'power3.inOut',
     })
     // Text pulse in the center of the terracotta wipe
@@ -44,32 +52,35 @@ export const ViewTransition: React.FC<ViewTransitionProps> = ({
       {
         opacity: 1,
         y: 0,
-        duration: 0.22,
+        duration: 0.2,
         ease: 'power2.out',
       },
-      '-=0.2'
+      '-=0.15'
     )
-    // 2. Midpoint callback: switches view underneath
-    .call(onMidpoint)
+    // 2. Midpoint callback: switches view underneath exactly once
+    .call(() => {
+      midpointRef.current();
+    })
     // Slight pause for intentional tactile feeling
     .to(text, {
       opacity: 0,
       y: -20,
-      duration: 0.18,
-      delay: 0.08,
+      duration: 0.15,
+      delay: 0.05,
       ease: 'power2.in',
     })
-    // 3. Panel continues past upward revealing the new view (~400ms)
+    // 3. Panel continues past upward revealing the new view (~380ms)
     .to(panel, {
       yPercent: -100,
-      duration: 0.44,
+      duration: 0.38,
       ease: 'power3.inOut',
     });
 
     return () => {
       tl.kill();
+      isRunningRef.current = false;
     };
-  }, [isTransitioning, onMidpoint, onComplete]);
+  }, [isTransitioning]);
 
   return (
     <div

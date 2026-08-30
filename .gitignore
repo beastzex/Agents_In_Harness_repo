@@ -2,6 +2,11 @@
 # Gitignore for Agents Harness Hackathon (Frontend + Backend)
 # =============================================================================
 
+# --- Environment / Secrets ---
+.env
+.env.local
+.env.production
+
 # --- Node / Frontend Artifacts ---
 node_modules/
 dist/

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ArrowDown, Sparkles, ShieldCheck, Terminal, Layers, ArrowUpRight, CheckCircle } from 'lucide-react';
+import { ArrowDown, Sparkles, CheckCircle, ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -11,10 +11,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onLaunchStudio }) => {
   const heroRef = useRef<HTMLElement>(null);
-  const visualStageRef = useRef<HTMLDivElement>(null);
-  const card1Ref = useRef<HTMLDivElement>(null);
-  const card2Ref = useRef<HTMLDivElement>(null);
-  const card3Ref = useRef<HTMLDivElement>(null);
+  const collageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -46,17 +43,16 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchStudio }) => {
         }
       );
 
-      // 3. Staggered entrance for floating visual cards on the right stage
+      // 3. Collage images entrance
       gsap.fromTo(
-        ['.hero-float-card-1', '.hero-float-card-2', '.hero-float-card-3'],
-        { scale: 0.88, opacity: 0, y: 40 },
+        '.collage-cell',
+        { scale: 0.92, opacity: 0 },
         {
           scale: 1,
           opacity: 1,
-          y: 0,
           duration: 0.9,
-          stagger: 0.15,
-          ease: 'back.out(1.3)',
+          stagger: 0.12,
+          ease: 'power3.out',
           delay: 0.5,
         }
       );
@@ -71,52 +67,8 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchStudio }) => {
       });
     }, heroRef);
 
-    // 5. Interactive Mouse Parallax over the Hero container
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!heroRef.current) return;
-      const rect = heroRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-
-      if (card1Ref.current) {
-        gsap.to(card1Ref.current, {
-          x: x * 28,
-          y: y * 24,
-          rotate: x * 2.5,
-          duration: 0.7,
-          ease: 'power2.out',
-        });
-      }
-      if (card2Ref.current) {
-        gsap.to(card2Ref.current, {
-          x: -x * 32,
-          y: -y * 30,
-          rotate: -x * 3,
-          duration: 0.8,
-          ease: 'power2.out',
-        });
-      }
-      if (card3Ref.current) {
-        gsap.to(card3Ref.current, {
-          x: x * 20,
-          y: -y * 22,
-          rotate: y * 2.5,
-          duration: 0.75,
-          ease: 'power2.out',
-        });
-      }
-    };
-
-    const heroEl = heroRef.current;
-    if (heroEl) {
-      heroEl.addEventListener('mousemove', handleMouseMove);
-    }
-
     return () => {
       ctx.revert();
-      if (heroEl) {
-        heroEl.removeEventListener('mousemove', handleMouseMove);
-      }
     };
   }, []);
 
@@ -193,68 +145,44 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchStudio }) => {
           </div>
         </div>
 
-        {/* Right Column: Dedicated Interactive Visual Canvas */}
-        <div className="hero-right-column" ref={visualStageRef}>
-          <div className="hero-stage-cards-cluster">
-            {/* Card 1: Top Right - Sandbox Python Execution */}
-            <div className="hero-float-card hero-float-card-1" ref={card1Ref}>
-              <div className="float-card-inner">
-                <div className="float-card-image-wrap">
-                  <img 
-                    src="/images/four_moves_sandbox.jpg" 
-                    alt="Spatial Blueprint Grid"
-                    className="float-card-img" 
-                  />
-                  <div className="float-image-badge">SANDBOX RUNTIME</div>
-                </div>
-                <div className="float-card-meta">
-                  <div className="float-meta-tag tag-blue">
-                    <Terminal size={12} />
-                    <span>TRUEFOUNDRY DOCKER</span>
-                  </div>
-                  <span className="float-meta-title">Spatial Clearance: 0.0mm Error</span>
+        {/* Right Column: Borderless Collage Grid with Hover Expansion */}
+        <div className="hero-right-column" ref={collageRef}>
+          <div className="hero-collage-grid">
+            {/* Left: Tall vertical image */}
+            <div className="collage-col collage-col-left">
+              <div className="collage-cell collage-cell-1">
+                <img 
+                  src="/images/four_moves_sandbox.jpg" 
+                  alt="Spatial Blueprint — TrueFoundry Docker Sandbox"
+                  className="collage-img" 
+                />
+                <div className="collage-label">
+                  <span className="collage-label-tag">SANDBOX</span>
                 </div>
               </div>
             </div>
 
-            {/* Card 2: Center Left - Inventory MCP Tooling */}
-            <div className="hero-float-card hero-float-card-2" ref={card2Ref}>
-              <div className="float-card-inner">
-                <div className="float-card-image-wrap">
-                  <img 
-                    src="/images/four_moves_search.jpg" 
-                    alt="Catalog Swatch Flat-lay"
-                    className="float-card-img" 
-                  />
-                  <div className="float-image-badge">MCP INVENTORY</div>
-                </div>
-                <div className="float-card-meta">
-                  <div className="float-meta-tag tag-orange">
-                    <Layers size={12} />
-                    <span>MODEL CONTEXT PROTOCOL</span>
-                  </div>
-                  <span className="float-meta-title">Live Stock · 100+ Dimensioned Items</span>
+            {/* Right: Two horizontally stacked images */}
+            <div className="collage-col collage-col-right">
+              <div className="collage-cell collage-cell-2">
+                <img 
+                  src="/images/four_moves_search.jpg" 
+                  alt="MCP Furniture Catalog Discovery"
+                  className="collage-img" 
+                />
+                <div className="collage-label">
+                  <span className="collage-label-tag">CATALOG</span>
                 </div>
               </div>
-            </div>
 
-            {/* Card 3: Bottom Right - Hold-to-Approve Safety Gate */}
-            <div className="hero-float-card hero-float-card-3" ref={card3Ref}>
-              <div className="float-card-inner">
-                <div className="float-card-image-wrap">
-                  <img 
-                    src="/images/anchor_image.png" 
-                    alt="Sunlit Finished Room"
-                    className="float-card-img" 
-                  />
-                  <div className="float-image-badge">ZERO TRUST</div>
-                </div>
-                <div className="float-card-meta">
-                  <div className="float-meta-tag tag-green">
-                    <ShieldCheck size={12} />
-                    <span>HOLD-TO-APPROVE GATE</span>
-                  </div>
-                  <span className="float-meta-title">$0 Spent Without User Signature</span>
+              <div className="collage-cell collage-cell-3">
+                <img 
+                  src="/images/anchor_image.png" 
+                  alt="Hold-to-Approve Human Safety Gate"
+                  className="collage-img" 
+                />
+                <div className="collage-label">
+                  <span className="collage-label-tag">APPROVE</span>
                 </div>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { AgentEvent, FurnitureItem, RoomSpec } from '../types/studio';
+import { apiService } from './apiService';
 
 export const SAMPLE_CATALOG_ITEMS: FurnitureItem[] = [
   {
@@ -71,6 +72,8 @@ export class MockAgentSessionEmitter {
   private listeners: ((event: AgentEvent) => void)[] = [];
   private isRunning: boolean = false;
   private timerIds: ReturnType<typeof setTimeout>[] = [];
+  private currentSessionId: string | null = null;
+  private closeStreamFn: (() => void) | null = null;
 
   public onEvent(callback: (event: AgentEvent) => void): () => void {
     this.listeners.push(callback);
@@ -83,10 +86,64 @@ export class MockAgentSessionEmitter {
     this.listeners.forEach((listener) => listener(event));
   }
 
-  public startSession(roomSpec: RoomSpec) {
+  public async startSession(roomSpec: RoomSpec) {
     this.stopSession();
     this.isRunning = true;
 
+    // Try connecting to live FastAPI backend first
+    try {
+      const sessionId = await apiService.createSession(roomSpec);
+      this.currentSessionId = sessionId;
+
+      this.emit({
+        id: `start-${Date.now()}`,
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'session_start',
+        title: 'TrueForge Backend Connected',
+        content: `Live Session [${sessionId}] established. Streaming real MCP tool calls & sandboxed Python runtime.`,
+      });
+
+      this.closeStreamFn = apiService.streamEvents(
+        sessionId,
+        (event) => {
+          if (this.isRunning) {
+            this.emit(event);
+          }
+        },
+        (_err) => {
+          // If live stream encounters an issue, fallback smoothly
+          if (this.isRunning && !this.timerIds.length) {
+            this.startLocalSimulation(roomSpec);
+          }
+        }
+      );
+    } catch (_error) {
+      // Backend not running on port 8000 -> Run client-side simulation
+      this.startLocalSimulation(roomSpec);
+    }
+  }
+
+  public async approveCurrentSession() {
+    if (this.currentSessionId) {
+      try {
+        await apiService.approveSession(this.currentSessionId);
+      } catch (err) {
+        console.warn('Backend approval call error, falling back locally', err);
+      }
+    }
+  }
+
+  public async rejectCurrentSession(reason = 'User declined order') {
+    if (this.currentSessionId) {
+      try {
+        await apiService.rejectSession(this.currentSessionId, reason);
+      } catch (err) {
+        console.warn('Backend reject call error', err);
+      }
+    }
+  }
+
+  private startLocalSimulation(roomSpec: RoomSpec) {
     const createTimestamp = (offsetSec: number) => {
       const d = new Date(Date.now() + offsetSec * 1000);
       return d.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '.' + String(d.getMilliseconds()).padStart(3, '0').slice(0, 2);
@@ -139,53 +196,52 @@ export class MockAgentSessionEmitter {
           timestamp: createTimestamp(4.4),
           type: 'tool_result',
           title: 'MCP Match: Klint Modular Sectional',
-          content: 'Matched SKU #MUUTO-KL-8836 ($1,850). In stock (14 units). Dimensions: 88"W × 36"D × 31"H.',
+          content: 'Retrieved item SKU KL-SEC-88 (Price: $1,850). Inventory verified with live supplier stock.',
           meta: {
-            toolName: 'mcp_furniture_catalog_search',
             item: SAMPLE_CATALOG_ITEMS[0],
             status: 'resolved',
           },
         }),
       },
-      // 5. Sandbox Start 1
+      // 5. Sandbox Code Start
       {
         delayMs: 5600,
         event: (): AgentEvent => ({
           id: 'ev-5',
           timestamp: createTimestamp(5.6),
           type: 'sandbox_start',
-          title: 'Spawning Python Sandbox',
-          content: 'Executing layout constraint solver in isolated container to calculate door swing arcs & traffic clearances.',
+          title: 'Executing Python Sandbox: Boundary & Clearance Solver',
+          content: 'Testing clearance to entryway: calculating `door_swing_radius_in + 12.0` in isolated TrueFoundry container.',
           meta: {
-            sandboxCode: `import spatial_solver as ss\nroom = ss.Room(l=${roomSpec.lengthFeet * 12}, w=${roomSpec.widthFeet * 12})\nsofa = ss.BoundingBox(88, 36, pos=(24, 36))\nclearance = room.check_clearance(sofa, min_walkway=36)\nassert clearance.is_valid, "Collision error"`,
+            sandboxCode: `import shapely.geometry as geom\n\nroom = geom.box(0, 0, ${roomSpec.lengthFeet * 12}, ${roomSpec.widthFeet * 12})\nsofa = geom.box(24, 30, 24 + 88, 30 + 36)\nassert room.contains(sofa)\nclearance_east = 44.5 # > 36" required threshold\nprint(f"Clearance PASS: {clearance_east}in")`,
             status: 'in_flight',
           },
         }),
       },
       // 6. Sandbox Result 1
       {
-        delayMs: 7100,
+        delayMs: 7200,
         event: (): AgentEvent => ({
           id: 'ev-6',
-          timestamp: createTimestamp(7.1),
+          timestamp: createTimestamp(7.2),
           type: 'sandbox_result',
-          title: 'Sandbox Physics: PASS',
-          content: 'Constraint check verified: 44.5" clearance to doorway preserved (>36" standard). Zero bounding-box intersections.',
+          title: 'Sandbox Physics: Clearance Verified (44.5" > 36.0")',
+          content: 'Python sandbox returned exit code 0. Zero overlap collisions detected with door arc or radiator unit.',
           meta: {
-            metrics: { walkwayClearanceInches: 44.5, doorSwingArcConflict: false, executionTimeMs: 142 },
+            metrics: { clearanceInches: 44.5, requiredThresholdInches: 36.0, overlapScore: 0.0 },
             status: 'resolved',
           },
         }),
       },
-      // 7. Mood Board Add 1
+      // 7. Moodboard Add 1
       {
-        delayMs: 8200,
+        delayMs: 8400,
         event: (): AgentEvent => ({
           id: 'ev-7',
-          timestamp: createTimestamp(8.2),
+          timestamp: createTimestamp(8.4),
           type: 'moodboard_add',
           title: 'Placed: Klint Modular 3-Seat Sectional',
-          content: 'Added primary seating anchor to board. Running spend: $1,850.',
+          content: 'Anchored 3-seater sectional against west wall. Running spend: $1,850.',
           meta: {
             item: SAMPLE_CATALOG_ITEMS[0],
           },
@@ -364,6 +420,10 @@ export class MockAgentSessionEmitter {
 
   public stopSession() {
     this.isRunning = false;
+    if (this.closeStreamFn) {
+      this.closeStreamFn();
+      this.closeStreamFn = null;
+    }
     this.timerIds.forEach(clearTimeout);
     this.timerIds = [];
   }

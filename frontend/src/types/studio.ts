@@ -15,7 +15,7 @@ export interface RoomSpec {
 export interface FurnitureItem {
   id: string;
   name: string;
-  category: 'seating' | 'lighting' | 'tables' | 'rugs' | 'decor' | 'storage';
+  category: 'seating' | 'lighting' | 'tables' | 'rugs' | 'decor' | 'storage' | string;
   price: number;
   dimensions: {
     width: number;
@@ -32,6 +32,10 @@ export interface FurnitureItem {
   rotationDeg?: number;
   positionX?: number; // percentage on canvas
   positionY?: number; // percentage on canvas
+  widthFt?: number;
+  depthFt?: number;
+  xFt?: number;
+  yFt?: number;
 }
 
 export type AgentEventType = 
@@ -60,6 +64,7 @@ export interface AgentEvent {
     sandboxCode?: string;
     metrics?: Record<string, any>;
     item?: FurnitureItem;
+    placements?: any[];
     status?: 'in_flight' | 'resolved' | 'failed';
     durationMs?: number;
   };

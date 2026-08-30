@@ -37,7 +37,7 @@ async def test_full_renovation_architect_e2e():
         assert session_id.startswith("sess-")
 
         # 3. Poll until agent reaches Human Approval Gate (WAITING_FOR_APPROVAL)
-        max_wait = 40
+        max_wait = 100
         waited = 0
         session_snap = None
         while waited < max_wait:

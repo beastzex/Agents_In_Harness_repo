@@ -107,6 +107,8 @@ class ApprovalGate:
         if approval_id not in self._requests:
             raise ValueError(f"Approval request '{approval_id}' does not exist.")
         req = self._requests[approval_id]
+        if req.status == ApprovalStatus.APPROVED:
+            return req
         if req.status != ApprovalStatus.PENDING:
             raise ValueError(f"Approval request '{approval_id}' is already {req.status}.")
         

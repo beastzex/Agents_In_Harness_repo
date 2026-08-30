@@ -116,6 +116,13 @@ class SessionManager:
         if not session:
             raise ValueError(f"Session {session_id} not found")
 
+        if session.status in ("APPROVED", "COMPLETED"):
+            return {
+                "status": session.status,
+                "session_id": session_id,
+                "message": "Session already approved/completed."
+            }
+
         if not session.approval_request_id:
             raise ValueError(f"Session {session_id} has no pending approval request")
 

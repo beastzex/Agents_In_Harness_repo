@@ -18,19 +18,19 @@ logger = logging.getLogger("api_routes")
 router = APIRouter()
 
 class RoomInput(BaseModel):
-    width_ft: Optional[float] = Field(default=12.0)
-    length_ft: Optional[float] = Field(default=10.0)
-    width: Optional[float] = None
-    length: Optional[float] = None
+    width_ft: Optional[float] = Field(default=12.0, gt=0, le=100)
+    length_ft: Optional[float] = Field(default=10.0, gt=0, le=100)
+    width: Optional[float] = Field(default=None, gt=0, le=100)
+    length: Optional[float] = Field(default=None, gt=0, le=100)
     door_wall: Optional[str] = "south"
-    door_position: Optional[float] = 3.0
-    door_width: Optional[float] = 3.0
+    door_position: Optional[float] = Field(default=3.0, ge=0)
+    door_width: Optional[float] = Field(default=3.0, gt=0, le=20)
 
 class CreateSessionRequest(BaseModel):
-    prompt: Optional[str] = Field(default="Setup modern ergonomic workspace under $1600")
-    goal: Optional[str] = None  # Compatibility alias
+    prompt: Optional[str] = Field(default="Setup modern ergonomic workspace under $1600", max_length=1000)
+    goal: Optional[str] = Field(default=None, max_length=1000)  # Compatibility alias
     room: Optional[Dict[str, Any]] = None
-    budget: Optional[float] = 2000.0
+    budget: Optional[float] = Field(default=2000.0, gt=0, le=500000)
     preferred_style: Optional[str] = "Modern & Ergonomic"
     auto_start: Optional[bool] = True
 
@@ -126,7 +126,17 @@ async def approve_session_order(session_id: str, payload: Optional[ApproveSessio
             res = await session_manager_instance.reject_session(session_id, reason)
             return res
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        error_msg = str(e)
+        # If session already completed or has no pending approval, return graceful response
+        if "no pending approval" in error_msg.lower() or "not found" in error_msg.lower():
+            session = session_manager_instance.get_session(session_id)
+            if session and session.status in ("COMPLETED", "APPROVED"):
+                return {
+                    "status": session.status,
+                    "session_id": session_id,
+                    "message": "Session already completed successfully."
+                }
+        raise HTTPException(status_code=400, detail=error_msg)
     except Exception as e:
         logger.error(f"Error resolving session approval: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
@@ -236,3 +246,40 @@ async def call_mcp_tool(payload: Dict[str, Any]):
     
     result = mcp_server_instance.execute_tool(tool_name, arguments)
     return result
+
+# Live AI Design Copilot Endpoints
+@router.post("/session/{session_id}/copilot")
+@router.post("/api/session/{session_id}/copilot")
+@router.post("/api/copilot/instruct")
+async def run_copilot_instruction(payload: Dict[str, Any], session_id: Optional[str] = None):
+    """
+    Accepts natural language design instructions and calculates live 2D architectural coordinates using GPT-OSS-120B.
+    """
+    from agent.copilot import live_copilot_instance
+    instruction = payload.get("instruction", "")
+    if not instruction:
+        raise HTTPException(status_code=400, detail="Missing 'instruction' text.")
+
+    room = payload.get("room", {"width_ft": 14.0, "length_ft": 18.0})
+    items = payload.get("items", [])
+    current_theme = payload.get("current_theme", "cyber-emerald")
+
+    result = await live_copilot_instance.process_instruction(
+        instruction=instruction,
+        room=room,
+        items=items,
+        current_theme=current_theme
+    )
+
+    # If active session exists, broadcast a copilot reasoning event into the live stream
+    if session_id:
+        session = session_manager_instance.get_session(session_id)
+        if session:
+            evt = session.add_event("reasoning", {
+                "step": "AI Copilot Live Redesign",
+                "message": f"Instruction '{instruction}': {result.get('reply')}"
+            })
+            await session_manager_instance.broadcast_event(session_id, evt)
+
+    return result
+
