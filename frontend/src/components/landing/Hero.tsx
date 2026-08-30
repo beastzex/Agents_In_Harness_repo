@@ -7,53 +7,56 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface HeroProps {
   onLaunchStudio: () => void;
+  isInitialLoaded?: boolean;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onLaunchStudio }) => {
+export const Hero: React.FC<HeroProps> = ({ onLaunchStudio, isInitialLoaded = true }) => {
   const heroRef = useRef<HTMLElement>(null);
   const collageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isInitialLoaded) return;
+
     const ctx = gsap.context(() => {
-      // 1. Line-by-line text reveal
+      // 1. Line-by-line text reveal with smooth fluid easing
       gsap.fromTo(
         '.hero-line-inner',
-        { y: 60, opacity: 0 },
+        { y: 45, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.85,
           stagger: 0.1,
           ease: 'power3.out',
-          delay: 0.15,
+          delay: 0.08,
         }
       );
 
-      // 2. Subtitle and actions entrance
+      // 2. Subtitle, eyebrow, actions entrance
       gsap.fromTo(
         ['.hero-eyebrow', '.hero-editorial-desc', '.hero-action-group', '.hero-stats-strip'],
-        { y: 24, opacity: 0 },
+        { y: 20, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.75,
-          stagger: 0.1,
+          stagger: 0.08,
           ease: 'power3.out',
-          delay: 0.45,
+          delay: 0.28,
         }
       );
 
       // 3. Collage images entrance
       gsap.fromTo(
         '.collage-cell',
-        { scale: 0.92, opacity: 0 },
+        { scale: 0.94, opacity: 0 },
         {
           scale: 1,
           opacity: 1,
-          duration: 0.9,
-          stagger: 0.12,
+          duration: 0.85,
+          stagger: 0.1,
           ease: 'power3.out',
-          delay: 0.5,
+          delay: 0.35,
         }
       );
 
@@ -70,7 +73,7 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchStudio }) => {
     return () => {
       ctx.revert();
     };
-  }, []);
+  }, [isInitialLoaded]);
 
   return (
     <section className="hero-section hero-full-viewport" id="hero" ref={heroRef}>

@@ -12,6 +12,7 @@ export const App: React.FC = () => {
   useLenis();
   const [currentView, setCurrentView] = useState<'landing' | 'studio'>('landing');
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+  const [isInitialLoaded, setIsInitialLoaded] = useState<boolean>(false);
 
   const handleLaunchStudio = () => {
     setIsTransitioning(true);
@@ -20,6 +21,10 @@ export const App: React.FC = () => {
   const handleBackToLanding = () => {
     setIsTransitioning(true);
   };
+
+  const handleInitialLoaded = React.useCallback(() => {
+    setIsInitialLoaded(true);
+  }, []);
 
   const handleTransitionMidpoint = React.useCallback(() => {
     setCurrentView((prev) => (prev === 'landing' ? 'studio' : 'landing'));
@@ -33,7 +38,7 @@ export const App: React.FC = () => {
   return (
     <div className="app-root">
       {/* Initial Smooth Orange Loading Screen */}
-      <InitialPreloader />
+      <InitialPreloader onLoaded={handleInitialLoaded} />
 
       {/* View Transition Wipe Overlay */}
       <ViewTransition
@@ -43,7 +48,7 @@ export const App: React.FC = () => {
       />
 
       {currentView === 'landing' ? (
-        <LandingPage onLaunchStudio={handleLaunchStudio} />
+        <LandingPage onLaunchStudio={handleLaunchStudio} isInitialLoaded={isInitialLoaded} />
       ) : (
         <StudioPage onBackToLanding={handleBackToLanding} />
       )}

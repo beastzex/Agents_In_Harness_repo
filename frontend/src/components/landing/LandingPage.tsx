@@ -14,9 +14,10 @@ import { Footer } from './Footer';
 
 interface LandingPageProps {
   onLaunchStudio: () => void;
+  isInitialLoaded?: boolean;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio, isInitialLoaded }) => {
   return (
     <div className="landing-page-root">
       {/* A1: Sticky Minimalist Nav */}
@@ -24,7 +25,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
 
       <main className="landing-main">
         {/* A2: 100vh Hero with Interactive Mouse Parallax Floating Blocks */}
-        <Hero onLaunchStudio={onLaunchStudio} />
+        <Hero onLaunchStudio={onLaunchStudio} isInitialLoaded={isInitialLoaded} />
 
         {/* Continuous Scrolling Partner & Tech-Stack Marquee */}
         <Marquee />

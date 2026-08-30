@@ -82,7 +82,11 @@ export const InitialPreloader: React.FC<InitialPreloaderProps> = ({ onLoaded }) 
       delay: 0.12,
       ease: 'power2.in',
     })
-    // 5. Smooth upward curtain wipe revealing hero page (0.65s)
+    // 5. Notify parent that reveal has started
+    .call(() => {
+      if (onLoaded) onLoaded();
+    })
+    // 6. Smooth upward curtain wipe revealing hero page (0.65s)
     .to(overlay, {
       yPercent: -100,
       duration: 0.65,
