@@ -7,6 +7,12 @@
 .env.local
 .env.production
 
+# --- Demo Videos / Large Media ---
+demo_videos/
+*.mp4
+*.webm
+*.mov
+
 # --- Node / Frontend Artifacts ---
 node_modules/
 dist/
