@@ -728,5 +728,148 @@
     "depth_in": 120.0,
     "style_tags": ["cozy", "warm-minimalist", "scandinavian"],
     "description": "Ultra-soft un-dyed high-pile New Zealand wool area rug with ribbed texture designed to anchor a king or queen bed."
+  },
+  {
+    "id": "sofa-haven-3seat-boucle",
+    "name": "Haven 3-Seater Belgian Bouclé Modular Sectional Sofa",
+    "category": "seating",
+    "price": 1850.00,
+    "image_url": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80",
+    "width_in": 88.0,
+    "depth_in": 36.0,
+    "style_tags": ["warm-minimalist", "scandinavian", "luxury", "modern"],
+    "description": "Deep-seated architectural 3-seater modular sectional sofa upholstered in plush Belgian oatmeal bouclé with kiln-dried oak plinth base."
+  },
+  {
+    "id": "sofa-palermo-cognac-leather",
+    "name": "Palermo Top-Grain Cognac Leather 3-Seat Sofa",
+    "category": "seating",
+    "price": 1950.00,
+    "image_url": "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=600&q=80",
+    "width_in": 84.0,
+    "depth_in": 36.0,
+    "style_tags": ["mid-century", "luxury", "warm", "executive"],
+    "description": "Supple Italian top-grain cognac leather sofa with high-density down feather cushions and slim tapered solid walnut legs."
+  },
+  {
+    "id": "sofa-nordic-linen-chaise",
+    "name": "Nordic L-Shaped Sectional with Reversible Chaise Lounge",
+    "category": "seating",
+    "price": 1680.00,
+    "image_url": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
+    "width_in": 96.0,
+    "depth_in": 60.0,
+    "style_tags": ["scandinavian", "cozy", "minimalist", "modern"],
+    "description": "Spacious L-shaped modular sectional sofa in textured natural linen with reversible corner chaise and removable dry-cleanable slipcovers."
+  },
+  {
+    "id": "table-mesa-oak-coffee",
+    "name": "Mesa Solid White Oak Low Oval Coffee Table",
+    "category": "tables",
+    "price": 580.00,
+    "image_url": "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=80",
+    "width_in": 48.0,
+    "depth_in": 24.0,
+    "style_tags": ["warm-minimalist", "scandinavian", "natural"],
+    "description": "Solid European white oak oval coffee table with soft rounded bullnose edge profile and matte wax protective seal."
+  },
+  {
+    "id": "table-travertine-round-coffee",
+    "name": "Luna Fluted Travertine Stone Round Coffee Table",
+    "category": "tables",
+    "price": 620.00,
+    "image_url": "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=600&q=80",
+    "width_in": 36.0,
+    "depth_in": 36.0,
+    "style_tags": ["luxury", "modern", "natural"],
+    "description": "Honed Italian beige travertine circular coffee table featuring a monolithic fluted cylindrical pedestal base."
+  },
+  {
+    "id": "media-nordic-70-console",
+    "name": "Nordic Slat-Door 70\" TV Media Console & Showcase",
+    "category": "storage",
+    "price": 680.00,
+    "image_url": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80",
+    "width_in": 70.0,
+    "depth_in": 18.0,
+    "style_tags": ["scandinavian", "warm-minimalist", "modern", "tech"],
+    "description": "Low-profile solid oak television console with acoustic slatted sliding doors, media component ventilation, and soundbar center shelf."
+  },
+  {
+    "id": "media-oslo-walnut-credenza",
+    "name": "Oslo Low-Profile Walnut TV Credenza & Showcase",
+    "category": "storage",
+    "price": 720.00,
+    "image_url": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=600&q=80",
+    "width_in": 64.0,
+    "depth_in": 16.0,
+    "style_tags": ["mid-century", "luxury", "modern"],
+    "description": "Rich American walnut entertainment console with brass hardware accents, cable routing ports, and tempered glass display showcase shelves."
+  },
+  {
+    "id": "showcase-arch-glass-cabinet",
+    "name": "Atelier Arch Glass Display Showcase & Curio Cabinet",
+    "category": "storage",
+    "price": 590.00,
+    "image_url": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80",
+    "width_in": 36.0,
+    "depth_in": 16.0,
+    "style_tags": ["luxury", "modern", "scandinavian"],
+    "description": "Tall arched display cabinet with fluted glass doors, integrated LED showcase spotlighting, and matte black steel hardware."
+  },
+  {
+    "id": "plant-monstera-terracotta",
+    "name": "Monstera Deliciosa in Large Fluted Terracotta Planter",
+    "category": "decor",
+    "price": 145.00,
+    "image_url": "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=600&q=80",
+    "width_in": 24.0,
+    "depth_in": 24.0,
+    "style_tags": ["natural", "organic", "scandinavian", "warm"],
+    "description": "Mature live split-leaf Monstera plant potted in a handcrafted fluted natural terracotta clay floor planter with drainage saucer."
+  },
+  {
+    "id": "plant-fiddle-leaf-fig",
+    "name": "Fiddle Leaf Fig Tree in Matte Glazed Ceramic Pot",
+    "category": "decor",
+    "price": 165.00,
+    "image_url": "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=600&q=80",
+    "width_in": 26.0,
+    "depth_in": 26.0,
+    "style_tags": ["natural", "modern", "luxury"],
+    "description": "Sculptural 5-foot Ficus Lyrata tree potted in a minimalist off-white cylindrical ceramic vessel."
+  },
+  {
+    "id": "lamp-akari-10a-floor",
+    "name": "Akari 10A Woven Washi Paper Sculptural Floor Lamp",
+    "category": "lighting",
+    "price": 320.00,
+    "image_url": "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=600&q=80",
+    "width_in": 20.0,
+    "depth_in": 20.0,
+    "style_tags": ["japandi", "minimalist", "sculptural", "warm"],
+    "description": "Authentic Japanese washi paper and blackened bamboo tripod floor lamp delivering 2700K warm diffused ambient light."
+  },
+  {
+    "id": "lamp-arco-brass-arch",
+    "name": "Arco Polished Brass Cantilever Arch Floor Lamp",
+    "category": "lighting",
+    "price": 290.00,
+    "image_url": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80",
+    "width_in": 36.0,
+    "depth_in": 16.0,
+    "style_tags": ["mid-century", "modern", "luxury"],
+    "description": "Dramatic cantilevered brushed brass arch floor lamp with a solid white Carrara marble stabilizing anchor base."
+  },
+  {
+    "id": "rug-atlas-ribbed-wool-9x12",
+    "name": "Atlas Ribbed Wool & Jute Large Living Room Area Carpet (9x12)",
+    "category": "rugs",
+    "price": 580.00,
+    "image_url": "https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&w=600&q=80",
+    "width_in": 144.0,
+    "depth_in": 108.0,
+    "style_tags": ["scandinavian", "warm-minimalist", "cozy"],
+    "description": "Substantial 9ft x 12ft hand-loomed high-low ribbed wool and organic jute living room area carpet in bone white and oatmeal."
   }
 ]

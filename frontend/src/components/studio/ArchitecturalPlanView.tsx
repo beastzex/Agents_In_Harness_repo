@@ -179,44 +179,86 @@ export const ArchitecturalPlanView: React.FC<ArchitecturalPlanViewProps> = ({
 
     if (xFt === undefined || yFt === undefined) {
       const lower = (item.name || '').toLowerCase();
-      if (item.category === 'beds' || lower.includes('bed')) {
-        // Bed centered on North wall
-        xFt = Math.max(1.0, (roomWidthFt - wFt) / 2);
-        yFt = 1.0;
-      } else if (item.category === 'nightstands' || lower.includes('nightstand')) {
-        // Nightstands placed on sides of bed
-        if (index % 2 === 0) {
-          xFt = Math.max(1.0, (roomWidthFt - 6.5) / 2 - wFt - 0.3);
+      const roomType = (roomSpec.roomType || '').toLowerCase();
+      const isLivingRoom = roomType.includes('living') || lower.includes('sofa') || lower.includes('sectional') || lower.includes('coffee') || lower.includes('tv') || lower.includes('plant');
+      const isBedroom = roomType.includes('bed') || lower.includes('bed') || lower.includes('nightstand') || lower.includes('dresser');
+
+      if (isLivingRoom && !isBedroom) {
+        // Industry-Standard Living Room Layout Hierarchy
+        if (item.category === 'seating' || lower.includes('sofa') || lower.includes('couch') || lower.includes('sectional')) {
+          // 1. Primary Sectional Sofa anchored against North wall
+          xFt = Math.max(1.0, (roomWidthFt - wFt) / 2);
+          yFt = 1.0;
+        } else if (item.category === 'tables' && (lower.includes('coffee') || lower.includes('center') || lower.includes('oval') || lower.includes('round'))) {
+          // 2. Coffee Table placed 18"-24" in front of sofa
+          xFt = Math.max(1.0, (roomWidthFt - wFt) / 2);
+          yFt = 4.4;
+        } else if (item.category === 'storage' || lower.includes('media') || lower.includes('tv') || lower.includes('credenza') || lower.includes('console') || lower.includes('showcase')) {
+          // 3. TV Media Console / Showcase along South wall (away from door swing)
+          xFt = Math.max(doorEndX / scale + 0.5, (roomWidthFt - wFt) / 2);
+          yFt = Math.max(1.0, roomLengthFt - dFt - 1.0);
+        } else if (item.category === 'decor' || lower.includes('plant') || lower.includes('monstera') || lower.includes('fig') || lower.includes('tree')) {
+          // 4. Botanical Indoor Plant in sunlit northwest corner near window
+          xFt = 1.2;
+          yFt = 1.2;
+        } else if (item.category === 'lighting' || lower.includes('lamp') || lower.includes('light')) {
+          // 5. Sculptural Floor Lamp flanking the sofa corner
+          xFt = Math.min(roomWidthFt - wFt - 1.2, (roomWidthFt + 7.5) / 2 + 0.8);
+          yFt = 1.2;
+        } else if (item.category === 'rugs' || lower.includes('rug') || lower.includes('carpet')) {
+          // 6. Large Living Room Area Carpet anchoring the seating group
+          xFt = Math.max(0.5, (roomWidthFt - wFt) / 2);
+          yFt = 1.2;
         } else {
-          xFt = Math.min(roomWidthFt - wFt - 1.0, (roomWidthFt + 6.5) / 2 + 0.3);
+          xFt = (index * 3.0) % Math.max(1, roomWidthFt - wFt - 2) + 1.5;
+          yFt = ((index * 2.5) % Math.max(1, roomLengthFt - dFt - 3)) + 1.5;
         }
-        yFt = 1.0;
-      } else if (item.category === 'seating' || lower.includes('sofa') || lower.includes('couch')) {
-        // Sofa centered on North wall
-        xFt = Math.max(1.0, (roomWidthFt - wFt) / 2);
-        yFt = 1.2;
-      } else if (item.category === 'tables' && (lower.includes('coffee') || lower.includes('center'))) {
-        // Coffee table in front of sofa with 4.5ft clearance
-        xFt = Math.max(1.0, (roomWidthFt - wFt) / 2);
-        yFt = 4.8;
-      } else if (item.category === 'tables') {
-        // Work desk anchored along West wall
-        xFt = 1.2;
-        yFt = 1.2;
-      } else if (item.category === 'storage') {
-        // Bookshelf or dresser on East wall
-        xFt = Math.max(1.0, roomWidthFt - wFt - 1.0);
-        yFt = 2.0;
-      } else if (item.category === 'lighting') {
-        // Ambient lamp in corner
-        xFt = Math.max(1.0, roomWidthFt - wFt - 1.5);
-        yFt = Math.max(1.0, roomLengthFt - dFt - 2.5);
-      } else if (item.category === 'rugs') {
-        xFt = Math.max(0.5, (roomWidthFt - wFt) / 2);
-        yFt = Math.max(0.5, (roomLengthFt - dFt) / 2);
+      } else if (isBedroom) {
+        // Bedroom Layout Hierarchy
+        if (item.category === 'beds' || lower.includes('bed')) {
+          xFt = Math.max(1.0, (roomWidthFt - wFt) / 2);
+          yFt = 1.0;
+        } else if (item.category === 'nightstands' || lower.includes('nightstand')) {
+          if (index % 2 === 0) {
+            xFt = Math.max(1.0, (roomWidthFt - 6.5) / 2 - wFt - 0.3);
+          } else {
+            xFt = Math.min(roomWidthFt - wFt - 1.0, (roomWidthFt + 6.5) / 2 + 0.3);
+          }
+          yFt = 1.0;
+        } else if (item.category === 'storage' || lower.includes('dresser')) {
+          xFt = Math.max(1.0, roomWidthFt - wFt - 1.2);
+          yFt = 2.5;
+        } else if (item.category === 'lighting') {
+          xFt = Math.max(1.0, (roomWidthFt - 6.5) / 2 - wFt - 0.3);
+          yFt = 1.0;
+        } else if (item.category === 'rugs') {
+          xFt = Math.max(0.5, (roomWidthFt - wFt) / 2);
+          yFt = 2.5;
+        } else {
+          xFt = (index * 3.0) % Math.max(1, roomWidthFt - wFt - 2) + 1.5;
+          yFt = ((index * 2.5) % Math.max(1, roomLengthFt - dFt - 3)) + 1.5;
+        }
       } else {
-        xFt = (index * 3.5) % Math.max(1, roomWidthFt - wFt - 2) + 1.5;
-        yFt = ((index * 2.8) % Math.max(1, roomLengthFt - dFt - 3)) + 1.5;
+        // Home-Office Layout Hierarchy
+        if (item.category === 'tables' || lower.includes('desk')) {
+          xFt = 1.2;
+          yFt = 1.2;
+        } else if (item.category === 'seating' || lower.includes('chair')) {
+          xFt = 2.2;
+          yFt = 3.6;
+        } else if (item.category === 'storage' || lower.includes('shelf') || lower.includes('credenza')) {
+          xFt = Math.max(1.0, roomWidthFt - wFt - 1.2);
+          yFt = 2.0;
+        } else if (item.category === 'lighting') {
+          xFt = 1.4;
+          yFt = 1.4;
+        } else if (item.category === 'rugs') {
+          xFt = Math.max(0.5, (roomWidthFt - wFt) / 2);
+          yFt = Math.max(0.5, (roomLengthFt - dFt) / 2);
+        } else {
+          xFt = (index * 3.5) % Math.max(1, roomWidthFt - wFt - 2) + 1.5;
+          yFt = ((index * 2.8) % Math.max(1, roomLengthFt - dFt - 3)) + 1.5;
+        }
       }
     }
 
@@ -256,14 +298,145 @@ export const ArchitecturalPlanView: React.FC<ArchitecturalPlanViewProps> = ({
   const renderCADFurnitureSymbol = (item: any, isHovered: boolean) => {
     const { pixelX: x, pixelY: y, pixelW: w, pixelD: d, name, category } = item;
     const lowerName = (name || '').toLowerCase();
-    const isBed = lowerName.includes('bed') || category === 'beds' || category === 'bed';
-    const isNightstand = lowerName.includes('nightstand') || category === 'nightstands' || lowerName.includes('bedside');
-    const isSofa = !isBed && (lowerName.includes('sofa') || lowerName.includes('couch') || lowerName.includes('sectional') || category === 'seating');
-    const isCoffeeTable = !isBed && (lowerName.includes('coffee') || lowerName.includes('center table') || (category === 'tables' && w < 4.5 * scale));
-    const isDesk = !isBed && (category === 'tables' && !isCoffeeTable);
-    const isBookshelf = category === 'storage' || lowerName.includes('credenza') || lowerName.includes('shelf') || lowerName.includes('cabinet') || lowerName.includes('dresser');
+    const isPlant = lowerName.includes('plant') || lowerName.includes('monstera') || lowerName.includes('fig') || lowerName.includes('tree') || category === 'plants' || (category === 'decor' && lowerName.includes('planter'));
+    const isMediaConsole = !isPlant && (lowerName.includes('tv') || lowerName.includes('media') || lowerName.includes('console') || lowerName.includes('showcase') || lowerName.includes('credenza') || lowerName.includes('entertainment'));
+    const isBed = !isPlant && !isMediaConsole && (lowerName.includes('bed') && !lowerName.includes('bedside') && !lowerName.includes('sofa') && !lowerName.includes('plant')) || category === 'beds';
+    const isNightstand = !isPlant && !isBed && (lowerName.includes('nightstand') || category === 'nightstands' || lowerName.includes('bedside'));
+    const isSofa = !isBed && !isMediaConsole && !isPlant && (lowerName.includes('sofa') || lowerName.includes('couch') || lowerName.includes('sectional') || (category === 'seating' && !lowerName.includes('chair') && !lowerName.includes('stool')));
+    const isCoffeeTable = !isBed && !isMediaConsole && !isPlant && (lowerName.includes('coffee') || lowerName.includes('center table') || lowerName.includes('oval') || lowerName.includes('travertine') || (category === 'tables' && w < 4.8 * scale && !lowerName.includes('desk') && !lowerName.includes('standing')));
+    const isDesk = !isBed && !isCoffeeTable && !isPlant && (category === 'tables' || lowerName.includes('desk'));
+    const isBookshelf = !isMediaConsole && !isPlant && (category === 'storage' || lowerName.includes('shelf') || lowerName.includes('cabinet') || lowerName.includes('dresser'));
     const isLamp = category === 'lighting' || lowerName.includes('lamp') || lowerName.includes('light');
-    const isRug = category === 'rugs' || lowerName.includes('rug');
+    const isRug = category === 'rugs' || lowerName.includes('rug') || lowerName.includes('carpet');
+
+    // 0. INDOOR BOTANICAL PLANT SYMBOL (Terracotta planter pot + 8-petal green foliage)
+    if (isPlant) {
+      const cx = x + w / 2;
+      const cy = y + d / 2;
+      const r = Math.min(w, d) / 2 - 4;
+      return (
+        <g className="cad-plant-symbol">
+          {/* Planter Pot Base */}
+          <circle
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill={activeTheme.doorColor || '#D9532F'}
+            fillOpacity="0.25"
+            stroke={activeTheme.itemStroke}
+            strokeWidth="1.8"
+          />
+          <circle
+            cx={cx}
+            cy={cy}
+            r={r * 0.75}
+            fill={activeTheme.pillowFill}
+            stroke={activeTheme.itemSecondaryStroke}
+            strokeWidth="1.0"
+          />
+          {/* 8 Botanical Split-Leaf Fronds */}
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, leafIdx) => {
+            const rad = (angle * Math.PI) / 180;
+            const lx = cx + Math.cos(rad) * (r * 1.15);
+            const ly = cy + Math.sin(rad) * (r * 1.15);
+            return (
+              <g key={leafIdx}>
+                <line
+                  x1={cx}
+                  y1={cy}
+                  x2={lx}
+                  y2={ly}
+                  stroke="#2D6A4F"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                <ellipse
+                  cx={lx}
+                  cy={ly}
+                  rx={r * 0.35}
+                  ry={r * 0.2}
+                  transform={`rotate(${angle} ${lx} ${ly})`}
+                  fill="#52B788"
+                  fillOpacity="0.85"
+                  stroke="#1B4332"
+                  strokeWidth="1"
+                />
+              </g>
+            );
+          })}
+          {/* Pot Center Soil Core */}
+          <circle cx={cx} cy={cy} r="4" fill="#1B4332" stroke={activeTheme.itemStroke} strokeWidth="1" />
+          <text
+            x={cx}
+            y={cy + r + 13}
+            textAnchor="middle"
+            fill={activeTheme.textColor}
+            fontSize="8.5"
+            fontFamily="monospace"
+            fontWeight="800"
+          >
+            INDOOR PLANT
+          </text>
+        </g>
+      );
+    }
+
+    // 0.2. TV MEDIA CONSOLE & SHOWCASE SYMBOL (Console + TV Bezel + Speakers)
+    if (isMediaConsole) {
+      return (
+        <g className="cad-media-console-symbol">
+          {/* Console Cabinet Body */}
+          <rect
+            x={x}
+            y={y}
+            width={w}
+            height={d}
+            rx="2"
+            fill={isHovered ? activeTheme.itemHoverFill : activeTheme.itemFill}
+            stroke={activeTheme.itemStroke}
+            strokeWidth="1.8"
+          />
+          {/* Acoustic Speaker Slats left & right */}
+          <rect x={x + 4} y={y + 3} width={Math.min(20, w * 0.14)} height={d - 6} rx="1" fill={activeTheme.pillowFill} stroke={activeTheme.itemSecondaryStroke} strokeWidth="0.8" />
+          <rect x={x + w - Math.min(20, w * 0.14) - 4} y={y + 3} width={Math.min(20, w * 0.14)} height={d - 6} rx="1" fill={activeTheme.pillowFill} stroke={activeTheme.itemSecondaryStroke} strokeWidth="0.8" />
+          
+          {/* Ultra-Slim TV Screen Top-Down Monolith */}
+          <rect
+            x={x + w * 0.14}
+            y={y + d * 0.25}
+            width={w * 0.72}
+            height={Math.max(5, d * 0.16)}
+            rx="1"
+            fill="#0F172A"
+            stroke={activeTheme.itemStroke}
+            strokeWidth="1.2"
+          />
+          {/* Soundbar / Media Component Center Tray */}
+          <rect
+            x={x + w * 0.25}
+            y={y + d * 0.6}
+            width={w * 0.5}
+            height={Math.max(3, d * 0.14)}
+            rx="1"
+            fill={activeTheme.pillowFill}
+            stroke={activeTheme.itemSecondaryStroke}
+            strokeWidth="0.8"
+          />
+          <text
+            x={x + w / 2}
+            y={y + d / 2 + 3}
+            textAnchor="middle"
+            fill="#FFFFFF"
+            fontSize="8.5"
+            fontFamily="monospace"
+            fontWeight="900"
+            letterSpacing="0.05em"
+          >
+            TV MEDIA SHOWCASE
+          </text>
+        </g>
+      );
+    }
 
     // 0. PLATFORM BED / KING / QUEEN BED SYMBOL (Headboard, 2 Pillows, Duvet Fold Line)
     if (isBed) {

@@ -84,17 +84,36 @@ def search_furniture_data(
             cat_lower = category.lower().strip()
             item_cat = item.category.lower().strip()
             
-            # Map common category synonyms
-            category_matches = (
-                item_cat == cat_lower or
-                (cat_lower in ["beds", "bed", "bedframe", "platform bed", "mattress"] and item_cat in ["beds", "bed"]) or
-                (cat_lower in ["nightstands", "nightstand", "bedside", "side table"] and item_cat in ["nightstands", "nightstand", "tables"]) or
-                (cat_lower in ["seating", "chair", "chairs", "seat", "sofa", "couch"] and item_cat in ["seating", "chair"]) or
-                (cat_lower in ["tables", "table", "desk", "desks"] and item_cat in ["tables", "desk"]) or
-                (cat_lower in ["lighting", "light", "lamps", "lamp"] and item_cat in ["lighting", "light"]) or
-                (cat_lower in ["storage", "shelves", "bookshelf", "cabinet", "dresser", "wardrobe"] and item_cat in ["storage"]) or
-                (cat_lower in ["decor", "decoration", "accessories", "accessory", "rug", "plant", "rugs"] and item_cat in ["decor", "accessory", "rugs"])
-            )
+            # Map common category synonyms & specific sub-roles
+            name_desc_lower = f"{item.name} {item.description}".lower()
+            
+            if cat_lower in ["sofas", "sofa", "sectional", "couches"]:
+                category_matches = item_cat in ["seating", "sofa"] and any(w in name_desc_lower for w in ["sofa", "sectional", "couch", "chaise"])
+            elif cat_lower in ["coffee-tables", "coffee_table", "center_table", "coffee table"]:
+                category_matches = item_cat in ["tables", "table"] and any(w in name_desc_lower for w in ["coffee", "oval", "travertine", "round", "center"])
+            elif cat_lower in ["media-consoles", "tv-units", "tv console", "media", "showcase", "entertainment"]:
+                category_matches = item_cat in ["storage"] and any(w in name_desc_lower for w in ["tv", "console", "credenza", "showcase", "cabinet", "media"])
+            elif cat_lower in ["indoor-plants", "plants", "plant", "planter", "botanical"]:
+                category_matches = (item_cat in ["decor", "plant", "plants"]) and any(w in name_desc_lower for w in ["plant", "monstera", "fig", "tree", "planter"])
+            elif cat_lower in ["beds", "bed", "bedframe", "platform bed", "mattress"]:
+                category_matches = item_cat in ["beds", "bed"] or "bed" in name_desc_lower
+            elif cat_lower in ["nightstands", "nightstand", "bedside", "side table"]:
+                category_matches = item_cat in ["nightstands", "nightstand"] or "nightstand" in name_desc_lower or "bedside" in name_desc_lower
+            elif cat_lower in ["seating", "chair", "chairs", "seat"]:
+                category_matches = item_cat in ["seating", "chair", "sofa"]
+            elif cat_lower in ["tables", "table", "desk", "desks"]:
+                category_matches = item_cat in ["tables", "desk"]
+            elif cat_lower in ["lighting", "light", "lamps", "lamp"]:
+                category_matches = item_cat in ["lighting", "light"]
+            elif cat_lower in ["storage", "shelves", "bookshelf", "cabinet", "dresser", "wardrobe"]:
+                category_matches = item_cat in ["storage"]
+            elif cat_lower in ["rugs", "rug", "carpet", "carpets"]:
+                category_matches = item_cat in ["rugs", "rug", "decor"] and "rug" in name_desc_lower
+            elif cat_lower in ["decor", "decoration", "accessories", "accessory"]:
+                category_matches = item_cat in ["decor", "accessory"]
+            else:
+                category_matches = item_cat == cat_lower
+
             if not category_matches:
                 continue
 

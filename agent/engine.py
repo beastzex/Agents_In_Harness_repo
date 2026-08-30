@@ -151,11 +151,12 @@ class TrueForgeAgentRunner:
             ]
         elif "living" in room_type_clean or "sofa" in prompt_lower or "lounge" in prompt_lower:
             cat_plan = [
-                ("seating", "central sectional sofa / seating", 0.45),
-                ("tables", "coffee table / center table", 0.20),
-                ("storage", "media console / bookshelf", 0.20),
-                ("lighting", "sculptural floor lamp", 0.08),
-                ("rugs", "living room area rug", 0.07),
+                ("sofas", "central modular sectional sofa", 0.40),
+                ("coffee-tables", "solid wood / stone center coffee table", 0.15),
+                ("media-consoles", "tv media console / entertainment showcase", 0.20),
+                ("indoor-plants", "indoor botanical floor plant in planter", 0.07),
+                ("lighting", "sculptural warm ambient floor lamp", 0.08),
+                ("rugs", "large living room area carpet", 0.10),
             ]
         elif "dining" in room_type_clean or "dining" in prompt_lower:
             cat_plan = [
