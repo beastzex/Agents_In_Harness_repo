@@ -95,7 +95,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchStudio }) => {
           <a href="#experience" className="nav-link">Benchmarks</a>
           <a href="#moves" className="nav-link">Four Moves</a>
           <a href="#pillars" className="nav-link">Architecture</a>
-          <a href="#demo" className="nav-link">Live Demo</a>
         </nav>
 
         {/* CTA Launch Studio */}
@@ -131,7 +130,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchStudio }) => {
             <a href="#experience" onClick={() => setMobileMenuOpen(false)}>Benchmarks</a>
             <a href="#moves" onClick={() => setMobileMenuOpen(false)}>Four Moves</a>
             <a href="#pillars" onClick={() => setMobileMenuOpen(false)}>Architecture</a>
-            <a href="#demo" onClick={() => setMobileMenuOpen(false)}>Live Demo</a>
             <button 
               type="button" 
               className="btn-launch-primary mobile-cta"

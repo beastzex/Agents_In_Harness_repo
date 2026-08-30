@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#D95D39"/>
+  <!-- Minimalist Architectural Plan Monogram -->
+  <path d="M20 20h24v24H20z" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M20 32h24M32 20v24" stroke="#FFFFFF" stroke-width="2.5" stroke-dasharray="3 2" opacity="0.85"/>
+  <circle cx="44" cy="20" r="3" fill="#FFFFFF"/>
+</svg>

@@ -7,7 +7,6 @@ import { ExperienceGrid } from './ExperienceGrid';
 import { FourMoves } from './FourMoves';
 import { StatSection } from './StatSection';
 import { Pillars } from './Pillars';
-import { DemoVideo } from './DemoVideo';
 import { Partners } from './Partners';
 import { FinalCTA } from './FinalCTA';
 import { Footer } from './Footer';
@@ -44,9 +43,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio, isInit
 
         {/* Three-Pillar Chapters */}
         <Pillars onLaunchStudio={onLaunchStudio} />
-
-        {/* Demo Video Section */}
-        <DemoVideo />
 
         {/* Ecosystem & Inflection Point */}
         <Partners />
