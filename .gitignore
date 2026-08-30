@@ -1,12 +1,17 @@
-# Byte-compiled / optimized / DLL files
+# =============================================================================
+# Gitignore for The Renovation Architect (TrueForge Agent Harness)
+# =============================================================================
+
+# --- Byte-compiled / optimized / DLL files ---
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
+*.pyd
+*.dll
+*.dylib
 
-# Distribution / packaging
+# --- Distribution / Packaging ---
 .Python
 build/
 develop-eggs/
@@ -26,15 +31,15 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# PyInstaller
+# --- PyInstaller & Executables ---
 *.manifest
 *.spec
 
-# Installer logs
+# --- Installer logs ---
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# --- Unit test / Coverage reports ---
 htmlcov/
 .tox/
 .nox/
@@ -49,39 +54,54 @@ coverage.xml
 .pytest_cache/
 pytestdebug.log
 
-# Translations
-*.mo
-*.pot
-
-# Environments
+# --- Environments & Secrets ---
+# Never commit actual secret keys or environment configs
 .env
 .env.*
 !.env.example
 .venv
+.venv/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+virtualenv/
+*.pem
+*.key
+*.secret
+*.p12
+*.pfx
 
-# Node / Frontend artifacts
+# --- Node / Frontend Artifacts ---
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+dist-ssr/
+*.local
 
-# IDEs and Editors
+# --- IDEs and Editors ---
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
+*.sublime-workspace
+*.sublime-project
+
+# --- Operating System Artifacts ---
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Temporary files & logs
+# --- Logs, Databases & Temporary Files ---
 logs/
 *.log
 *.sqlite3
